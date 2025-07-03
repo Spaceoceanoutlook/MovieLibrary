@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, Float
 from .base import Base
 from .associations import FilmGenre, FilmCountry
 
@@ -11,7 +11,7 @@ class Film(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     year: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str | None] = mapped_column(String, nullable=True)
-    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    rating: Mapped[float] = mapped_column(Float, nullable=False)
     photo: Mapped[str] = mapped_column(String, nullable=False)
 
     genres: Mapped[List["FilmGenre"]] = relationship(back_populates="film", cascade="all, delete-orphan")

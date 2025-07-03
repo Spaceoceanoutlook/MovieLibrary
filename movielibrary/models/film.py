@@ -1,0 +1,18 @@
+from typing import List
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Integer
+from .base import Base
+from .associations import FilmGenre, FilmCountry
+
+class Film(Base):
+    __tablename__ = "films"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    year: Mapped[int] = mapped_column(Integer, nullable=False)
+    description: Mapped[str | None] = mapped_column(String, nullable=True)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    photo: Mapped[str] = mapped_column(String, nullable=False)
+
+    genres: Mapped[List["FilmGenre"]] = relationship(back_populates="film", cascade="all, delete-orphan")
+    countries: Mapped[List["FilmCountry"]] = relationship(back_populates="film", cascade="all, delete-orphan")

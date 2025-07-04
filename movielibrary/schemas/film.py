@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
-from typing import List
+from typing import List, Optional
 from .genre import GenreRead
 from .country import CountryRead
 
@@ -8,7 +7,7 @@ class FilmBase(BaseModel):
     title: str
     year: int
     description: Optional[str] = None
-    rating: int
+    rating: float
 
 class FilmCreate(FilmBase):
     pass

@@ -16,3 +16,11 @@ class Film(Base):
 
     genres: Mapped[List["FilmGenre"]] = relationship(back_populates="film", cascade="all, delete-orphan")
     countries: Mapped[List["FilmCountry"]] = relationship(back_populates="film", cascade="all, delete-orphan")
+
+    @property
+    def genre_list(self):
+        return [fg.genre for fg in self.genres]
+
+    @property
+    def country_list(self):
+        return [fc.country for fc in self.countries]

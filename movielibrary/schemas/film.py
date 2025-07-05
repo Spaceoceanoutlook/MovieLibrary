@@ -15,10 +15,6 @@ class FilmCreate(FilmBase):
 class FilmRead(FilmBase):
     id: int
     photo: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-class FilmReadWithRelations(FilmRead):
     genres: List[GenreRead] = Field(..., alias="genre_list")
     countries: List[CountryRead] = Field(..., alias="country_list")
 

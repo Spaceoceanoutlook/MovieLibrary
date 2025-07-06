@@ -58,14 +58,23 @@
                 color: #888;
                 margin-top: auto;
             }
-            .film-content .genres span,
-            .film-content .countries span {
+            .film-content .genres a,
+            .film-content .countries a {
                 display: inline-block;
                 background-color: #e0e0e0;
                 border-radius: 3px;
                 padding: 3px 7px;
                 margin-right: 5px;
                 margin-bottom: 5px;
+                color: #333;
+                text-decoration: none;
+                font-size: 0.9em;
+                transition: background-color 0.2s;
+            }
+
+            .film-content .genres a:hover,
+            .film-content .countries a:hover {
+                background-color: #d5d5d5;
             }
         </style>
     </head>
@@ -80,13 +89,17 @@
                 {% if film.genres %}
                 <div class="genres">
                     Жанры: {% for genre in film.genres %}
-                    <span>{{ genre.name }}</span>
+                    <a href="/genre/{{ genre.name | urlencode }}/"
+                        >{{ genre.name }}</a
+                    >
                     {% endfor %}
                 </div>
                 {% endif %} {% if film.countries %}
                 <div class="countries">
                     Страны: {% for country in film.countries %}
-                    <span>{{ country.name }}</span>
+                    <a href="/country/{{ country.name | urlencode }}/"
+                        >{{ country.name }}</a
+                    >
                     {% endfor %}
                 </div>
                 {% endif %}

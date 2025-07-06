@@ -48,16 +48,19 @@
                 line-height: 1.4;
             }
             .film-content .rating {
+                font-size: 0.9em;
                 font-weight: bold;
                 color: #e44d26;
                 margin-bottom: 10px;
             }
+            .film-content .year,
             .film-content .genres,
             .film-content .countries {
                 font-size: 0.9em;
                 color: #888;
                 margin-top: auto;
             }
+            .film-content .year a,
             .film-content .genres a,
             .film-content .countries a {
                 display: inline-block;
@@ -71,7 +74,7 @@
                 font-size: 0.9em;
                 transition: background-color 0.2s;
             }
-
+            .film-content .year a:hover,
             .film-content .genres a:hover,
             .film-content .countries a:hover {
                 background-color: #d5d5d5;
@@ -83,7 +86,10 @@
         <div class="film-card">
             <img src="/static/images/{{ film.photo }}" alt="{{ film.title }}" />
             <div class="film-content">
-                <h2>{{ film.title }} ({{ film.year }})</h2>
+                <h2>{{ film.title }}</h2>
+                <p class="year">
+                    Год: <a href="/year/{{ film.year }}">{{ film.year }}</a>
+                </p>
                 <p class="rating">Рейтинг: {{ film.rating }}</p>
                 <p>{{ film.description }}</p>
                 {% if film.genres %}

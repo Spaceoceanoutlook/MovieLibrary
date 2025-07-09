@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from movielibrary.routers import film, filters, homepage
 import uvicorn
 
@@ -9,7 +8,6 @@ app.include_router(film.film_router, prefix="/api", tags=["films"])
 app.include_router(filters.filters_router, tags=["filters"])
 app.include_router(homepage.homepage_router, tags=["homepage"])
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("movielibrary.app:app", host="0.0.0.0", port=8000, reload=True)

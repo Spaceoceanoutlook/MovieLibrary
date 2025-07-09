@@ -84,7 +84,10 @@
     <body>
         {% for film in films %}
         <div class="film-card">
-            <img src="/static/images/{{ film.photo }}" alt="{{ film.title }}" />
+            <img
+                src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
+                alt="{{ film.title }}"
+            />
             <div class="film-content">
                 <h2>{{ film.title }}</h2>
                 <p class="year">

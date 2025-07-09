@@ -77,6 +77,6 @@ def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db
         joinedload(Film.countries).joinedload(FilmCountry.country)
     ).filter(Film.year == year)
 
-    films = query.all()
+    films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})

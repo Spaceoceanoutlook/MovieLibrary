@@ -11,8 +11,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY . .
 
-RUN mkdir -p /app/static/images
-
 EXPOSE 8000
 
 CMD ["uvicorn", "movielibrary.app:app", "--host", "0.0.0.0", "--port", "8000"]

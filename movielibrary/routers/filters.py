@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Request
+from sqlalchemy import desc
 from sqlalchemy.orm import Session, joinedload
 from movielibrary.database import get_db
 from movielibrary.schemas.film import FilmRead
@@ -42,7 +43,7 @@ def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends
         joinedload(Film.countries).joinedload(FilmCountry.country)
     ).join(Film.genres).join(FilmGenre.genre).filter(Genre.name == genre_name)
 
-    films = query.all()
+    films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 
@@ -59,7 +60,7 @@ def read_films_by_country(country_name: str, request: Request, db: Session = Dep
         joinedload(Film.countries).joinedload(FilmCountry.country)
     ).join(Film.countries).join(FilmCountry.country).filter(Country.name == country_name)
 
-    films = query.all()
+    films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 

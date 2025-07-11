@@ -8,34 +8,34 @@ from fastapi.responses import HTMLResponse
 from movielibrary.models import Film, FilmGenre, FilmCountry, Country, Genre
 
 templates = Jinja2Templates(directory="movielibrary/templates")
-filters_router = APIRouter()
+router = APIRouter()
 
 
-@filters_router.get(
+@router.get(
     "/genres/",
     summary="List Genres",
-    description="Возвращает список всех жанров фильмов."
+    description="Возвращает список всех жанров фильмов"
 )
 def list_genres(db: Session = Depends(get_db)):
     genres = db.query(Genre).all()
     return [g.name for g in genres]
 
 
-@filters_router.get(
+@router.get(
     "/countries/",
     summary="List Countries",
-    description="Возвращает список всех стран, представленных в фильмотеке."
+    description="Возвращает список всех стран"
 )
 def list_countries(db: Session = Depends(get_db)):
     countries = db.query(Country).all()
     return [c.name for c in countries]
 
 
-@filters_router.get(
-    "/genre/{genre_name}",
+@router.get(
+    "/genres/{genre_name}",
     response_class=HTMLResponse,
     summary="Read Films By Genre",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному жанру."
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному жанру"
 )
 def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends(get_db)):
     query = db.query(Film).options(
@@ -48,11 +48,11 @@ def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 
 
-@filters_router.get(
-    "/country/{country_name}",
+@router.get(
+    "/countries/{country_name}",
     response_class=HTMLResponse,
     summary="Read Films By Country",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранной стране."
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранной стране"
 )
 def read_films_by_country(country_name: str, request: Request, db: Session = Depends(get_db)):
     query = db.query(Film).options(
@@ -65,11 +65,11 @@ def read_films_by_country(country_name: str, request: Request, db: Session = Dep
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 
 
-@filters_router.get(
-    "/year/{year}",
+@router.get(
+    "/years/{year}",
     response_class=HTMLResponse,
     summary="Read Films By Year",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска."
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска"
 )
 def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db)):
     query = db.query(Film).options(

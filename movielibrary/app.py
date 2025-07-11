@@ -1,12 +1,12 @@
 from fastapi import FastAPI
-from movielibrary.routers import film, filters, homepage
+from movielibrary.routers import films, filters, pages
 import uvicorn
 
 app = FastAPI(title="Movie Library API", version="0.1.0")
 
-app.include_router(film.film_router, prefix="/api", tags=["films"])
-app.include_router(filters.filters_router, tags=["filters"])
-app.include_router(homepage.homepage_router, tags=["homepage"])
+app.include_router(films.router, prefix="/api/films", tags=["Films"])
+app.include_router(filters.router, prefix="/api/filters", tags=["Filters"])
+app.include_router(pages.router, tags=["Web Pages"])
 
 
 if __name__ == "__main__":

@@ -9,9 +9,6 @@ class FilmBase(BaseModel):
     description: Optional[str] = None
     rating: float
 
-class FilmCreate(FilmBase):
-    pass
-
 class FilmRead(FilmBase):
     id: int
     photo: str

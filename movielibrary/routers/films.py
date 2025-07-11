@@ -6,28 +6,30 @@ from movielibrary.database import get_db
 from movielibrary.schemas.film import FilmRead
 
 
-film_router = APIRouter()
+router = APIRouter()
 
-@film_router.get(
-    "/",
+
+@router.get(
+    "",
     response_model=List[FilmRead],
-    summary="Get Films",
-    description="Возвращает список всех фильмов с жанрами и странами. Используется для API."
+    summary="List Films",
+    description="Возвращает список всех фильмов с жанрами и странами"
 )
-def get_films(db: Session = Depends(get_db)):
+def list_films(db: Session = Depends(get_db)):
     films = db.query(Film).options(
         joinedload(Film.genres).joinedload(FilmGenre.genre),
         joinedload(Film.countries).joinedload(FilmCountry.country)
     ).all()
     return films
 
-@film_router.get(
+
+@router.get(
     "/{film_id}",
     response_model=FilmRead,
-    summary="Get Film",
-    description="Возвращает подробную информацию о фильме по его ID, включая жанры и страны."
+    summary="Retrieve Film",
+    description="Возвращает подробную информацию о фильме по его ID, включая жанры и страны"
 )
-def get_film(film_id: int, db: Session = Depends(get_db)):
+def retrieve_film(film_id: int, db: Session = Depends(get_db)):
     film = db.query(Film).options(
             joinedload(Film.genres).joinedload(FilmGenre.genre),
             joinedload(Film.countries).joinedload(FilmCountry.country)

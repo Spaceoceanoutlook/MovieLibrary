@@ -14,8 +14,8 @@ class Film(Base):
     rating: Mapped[float] = mapped_column(Float, nullable=False)
     photo: Mapped[str] = mapped_column(String, nullable=False)
 
-    genres: Mapped[List["FilmGenre"]] = relationship(back_populates="film", cascade="all, delete-orphan")
-    countries: Mapped[List["FilmCountry"]] = relationship(back_populates="film", cascade="all, delete-orphan")
+    genres: Mapped[List["FilmGenre"]] = relationship(back_populates="film", cascade="all, delete-orphan", passive_deletes=True)
+    countries: Mapped[List["FilmCountry"]] = relationship(back_populates="film", cascade="all, delete-orphan", passive_deletes=True)
 
     @property
     def genre_list(self):

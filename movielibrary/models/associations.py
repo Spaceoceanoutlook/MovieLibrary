@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class FilmGenre(Base):
     __tablename__ = "film_genre"
 
-    film_id: Mapped[int] = mapped_column(ForeignKey("films.id"), primary_key=True)
+    film_id: Mapped[int] = mapped_column(ForeignKey("films.id"), primary_key=True) # добавить ondelete="CASCADE", чтобы работало каскадное удаление
     genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"), primary_key=True)
 
     film: Mapped["Film"] = relationship(back_populates="genres")

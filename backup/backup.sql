@@ -8,7 +8,7 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET statement_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -566,6 +566,10 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 210	10
 210	26
 211	1
+212	18
+212	3
+216	1
+217	1
 \.
 
 
@@ -837,6 +841,12 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 209	4
 210	9
 211	2
+212	9
+212	2
+212	11
+216	9
+217	5
+217	9
 \.
 
 
@@ -1053,6 +1063,9 @@ COPY public.films (id, title, year, description, rating, photo) FROM stdin;
 208	Эксперимент «За стеклом»	2019	Восемь интернет-знаменитостей соглашаются на участие в онлайн-шоу за большое денежное вознаграждение. Зрители голосуют за понравившихся участников, и самый непопулярный выбывает. Также ребят ждут изощрённые испытания, и они ещё не знают, что главный приз в этой зловещей игре — их собственные жизни.	6.1	Funhouse.webp
 209	Полночь с дьяволом	2023	Хэллоуин 1977 года. Пытаясь поднять рейтинги просмотров некогда популярной передачи, телеведущий Джек Делрой делает спецвыпуск о паранормальном. Он приглашает медиума и скептика, а гвоздём программы должны стать парапсихолог и её подопечная — 13-летняя Лили, якобы одержимая демоном.	6.2	LateNightwiththeDevil.webp
 211	Нечего терять	1997	Рекламный агент Ник Бим, которому нечего терять… кроме своей обожаемой жены, застает ее в постели с собственным начальником. Доведенный до отчаяния, он садится в машину и уезжает куда глаза глядят.\r\n\r\nНо неприятности для него только начинаются, ведь в этот момент другой неудачник выходит на большую дорогу в поисках жертвы. А на горизонте как раз показался автомобиль Ника...	7.8	NothingtoLose.webp
+212	Окно в Париж	1993	После изрядного подпития обитатели питерской коммуналки открывают окно… в Париж. С этого момента начинаются прогулки по городу грёз, а также злоключения французских «гостей» на берегах Невы.	7.3	oknovparig.webp
+216	Дружба	2024	Проживающий в пригороде странноватый и неуклюжий во всех отношениях маркетолог Крейг знакомится с новым соседом Остином, ведущим прогноза погоды. Тот коллекционирует древности, играет в рок-группе, и дружба с таким разносторонним интересным человеком вынуждает Крейга смотреть на мир по-новому. Один неловкий вечер в компании друзей Остина — и он уже не хочет иметь с Крейгом ничего общего. Но тот не готов терять нового друга.	6.5	Friendship.webp
+217	Американский психопат	2000	Днем он ничем не отличается от окружающих, и в толпе вы не обратите на него внимания. Но ночью этот благовидный гражданин превращается в изощренного убийцу.	7.2	AmericanPsycho.webp
 \.
 
 
@@ -1085,7 +1098,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 1, false);
+SELECT pg_catalog.setval('public.films_id_seq', 223, true);
 
 
 --
@@ -1172,7 +1185,7 @@ ALTER TABLE ONLY public.film_country
 --
 
 ALTER TABLE ONLY public.film_country
-    ADD CONSTRAINT film_country_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.films(id);
+    ADD CONSTRAINT film_country_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.films(id) ON DELETE CASCADE;
 
 
 --
@@ -1180,7 +1193,7 @@ ALTER TABLE ONLY public.film_country
 --
 
 ALTER TABLE ONLY public.film_genre
-    ADD CONSTRAINT film_genre_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.films(id);
+    ADD CONSTRAINT film_genre_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.films(id) ON DELETE CASCADE;
 
 
 --
@@ -1194,3 +1207,4 @@ ALTER TABLE ONLY public.film_genre
 --
 -- PostgreSQL database dump complete
 --
+

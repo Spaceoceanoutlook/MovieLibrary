@@ -91,14 +91,17 @@
             <div class="film-content">
                 <h2>{{ film.title }}</h2>
                 <p class="year">
-                    Год: <a href="/year/{{ film.year }}">{{ film.year }}</a>
+                    Год:
+                    <a href="/api/filters/years/{{ film.year }}"
+                        >{{ film.year }}</a
+                    >
                 </p>
                 <p class="rating">Рейтинг: {{ film.rating }}</p>
                 <p>{{ film.description }}</p>
                 {% if film.genres %}
                 <div class="genres">
                     Жанры: {% for genre in film.genres %}
-                    <a href="/genre/{{ genre.name | urlencode }}/"
+                    <a href="/api/filters/genres/{{ genre.name | urlencode }}/"
                         >{{ genre.name }}</a
                     >
                     {% endfor %}
@@ -106,7 +109,8 @@
                 {% endif %} {% if film.countries %}
                 <div class="countries">
                     Страны: {% for country in film.countries %}
-                    <a href="/country/{{ country.name | urlencode }}/"
+                    <a
+                        href="/api/filters/countries/{{ country.name | urlencode }}/"
                         >{{ country.name }}</a
                     >
                     {% endfor %}

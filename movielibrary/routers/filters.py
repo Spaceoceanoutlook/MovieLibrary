@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get(
     "/genres/",
     summary="List Genres",
-    description="Возвращает список всех жанров фильмов"
+    description="Возвращает список всех жанров"
 )
 def list_genres(db: Session = Depends(get_db)):
     genres = db.query(Genre).all()

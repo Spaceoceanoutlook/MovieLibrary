@@ -37,7 +37,7 @@ def search_films(
     return films
 
 @router.get(
-    "/info",
+    "/statistics",
     response_model=dict[str, float],
     summary="Get films statistics",
     description="Показывает общую информацию о библиотеке фильмов"

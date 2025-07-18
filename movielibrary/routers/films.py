@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from typing import List
 from movielibrary.models import Film, FilmCountry, FilmGenre
 from movielibrary.database import get_db
@@ -35,6 +36,20 @@ def search_films(
     films = db.query(Film).filter(Film.title.ilike(f"%{q}%")).all()
     return films
 
+@router.get(
+    "/info",
+    response_model=dict[str, float],
+    summary="Get films statistics",
+    description="Показывает общую информацию о библиотеке фильмов"
+)
+def get_films_statistics(db: Session = Depends(get_db)):
+    films_count = db.query(Film).count()
+    average_rating = db.query(func.avg(Film.rating)).scalar() or 0.0
+
+    return {
+        "total_films": films_count,
+        "average_rating": round(average_rating, 2)
+    }
 
 @router.get(
     "/{film_id}",

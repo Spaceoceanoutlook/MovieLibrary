@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from movielibrary.models import Film, FilmCountry, FilmGenre
 from movielibrary.database import get_db
-from movielibrary.schemas.film import FilmRead
+from movielibrary.schemas.film import FilmRead, FilmBase
 
 
 router = APIRouter()
@@ -20,6 +20,19 @@ def list_films(db: Session = Depends(get_db)):
         joinedload(Film.genres).joinedload(FilmGenre.genre),
         joinedload(Film.countries).joinedload(FilmCountry.country)
     ).all()
+    return films
+
+@router.get(
+    "/search",
+    response_model=List[FilmBase],
+    summary="Search Films by Title",
+    description="Позволяет искать фильмы по названию (частичное совпадение)"
+)
+def search_films(
+    q: str = Query(..., min_length=1, description="Название фильма"),
+    db: Session = Depends(get_db)
+):
+    films = db.query(Film).filter(Film.title.ilike(f"%{q}%")).all()
     return films
 
 

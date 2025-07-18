@@ -97,11 +97,11 @@
             </div>
             <div class="form-group">
                 <label for="rating"">Рейтинг</label>
-                <input type="number" id="rating" name="rating" step="0.1" min="0" max="10" />
+                <input type="number" id="rating" name="rating" step="0.1" min="0" max="10" required />
             </div>
             <div class="form-group">
                 <label for="photo">Название постера</label>
-                <input type="text" id="photo" name="photo" />
+                <input type="text" id="photo" name="photo" required />
             </div>
             <div class="form-group">
                 <label for="genres">Жанры</label>
@@ -123,6 +123,10 @@
                     <option value="{{ country.id }}">{{ country.name }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="form-group">
+                <label for="code">Код</label>
+                <input type="text" id="code" name="code" required />
             </div>
             <div class="form-group">
                 <button type="submit">Добавить фильм</button>

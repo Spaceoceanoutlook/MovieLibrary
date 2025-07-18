@@ -7,7 +7,10 @@ from movielibrary.schemas.film import FilmRead
 from movielibrary.database import get_db
 from movielibrary.models import Film, FilmGenre, FilmCountry, Genre, Country
 from typing import List
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 router = APIRouter()
 templates = Jinja2Templates(directory="movielibrary/templates")
@@ -55,10 +58,13 @@ def create_film(
     rating: float = Form(..., ge=0, le=10),
     description: str = Form(""),
     photo: str = Form(""),
+    code: str = Form(...),
     genres: List[int] = Form([]),
     countries: List[int] = Form([]),
     db: Session = Depends(get_db),
 ):
+    if code != os.getenv("VALID_CODE"):
+            raise HTTPException(status_code=400, detail="Неверный код доступа")
     new_film = Film(
         title=title,
         year=year,

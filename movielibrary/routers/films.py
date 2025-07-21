@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=List[FilmRead],
+    response_model=List[FilmBase],
     summary="List Films",
     description="Возвращает список всех фильмов с жанрами и странами"
 )
@@ -25,7 +25,7 @@ def list_films(db: Session = Depends(get_db)):
 
 @router.get(
     "/search",
-    response_model=List[FilmBase],
+    response_model=List[FilmRead],
     summary="Search Films by Title",
     description="Позволяет искать фильмы по названию (частичное совпадение)"
 )

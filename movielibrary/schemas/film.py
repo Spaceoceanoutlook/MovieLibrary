@@ -4,13 +4,13 @@ from .genre import GenreRead
 from .country import CountryRead
 
 class FilmBase(BaseModel):
+    id: int
     title: str
     year: int
     description: Optional[str] = None
     rating: float
 
 class FilmRead(FilmBase):
-    id: int
     photo: str
     genres: List[GenreRead] = Field(..., alias="genre_list")
     countries: List[CountryRead] = Field(..., alias="country_list")

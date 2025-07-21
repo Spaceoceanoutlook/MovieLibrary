@@ -21,7 +21,6 @@ templates = Jinja2Templates(directory="movielibrary/templates")
     response_class=HTMLResponse,
     summary="Read Films",
     description="Главная страница с HTML-шаблоном. Показывает список всех фильмов с жанрами и странами",
-    include_in_schema=False
 )
 def read_films(request: Request, db: Session = Depends(get_db)):
     films = db.query(Film).options(
@@ -31,13 +30,59 @@ def read_films(request: Request, db: Session = Depends(get_db)):
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 
+@router.get(
+    "/genres/{genre_name}",
+    response_class=HTMLResponse,
+    summary="Read Films By Genre",
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному жанру"
+)
+def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends(get_db)):
+    query = db.query(Film).options(
+        joinedload(Film.genres).joinedload(FilmGenre.genre),
+        joinedload(Film.countries).joinedload(FilmCountry.country)
+    ).join(Film.genres).join(FilmGenre.genre).filter(Genre.name == genre_name)
+
+    films = query.order_by(desc(Film.rating)).all()
+    films_for_template = [FilmRead.model_validate(film) for film in films]
+    return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
+
+@router.get(
+    "/countries/{country_name}",
+    response_class=HTMLResponse,
+    summary="Read Films By Country",
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранной стране"
+)
+def read_films_by_country(country_name: str, request: Request, db: Session = Depends(get_db)):
+    query = db.query(Film).options(
+        joinedload(Film.genres).joinedload(FilmGenre.genre),
+        joinedload(Film.countries).joinedload(FilmCountry.country)
+    ).join(Film.countries).join(FilmCountry.country).filter(Country.name == country_name)
+
+    films = query.order_by(desc(Film.rating)).all()
+    films_for_template = [FilmRead.model_validate(film) for film in films]
+    return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
+
+@router.get(
+    "/years/{year}",
+    response_class=HTMLResponse,
+    summary="Read Films By Year",
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска"
+)
+def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db)):
+    query = db.query(Film).options(
+        joinedload(Film.genres).joinedload(FilmGenre.genre),
+        joinedload(Film.countries).joinedload(FilmCountry.country)
+    ).filter(Film.year == year)
+
+    films = query.order_by(desc(Film.rating)).all()
+    films_for_template = [FilmRead.model_validate(film) for film in films]
+    return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template})
 
 @router.get(
     "/create",
     response_class=HTMLResponse,
     summary="Show Create Film Form",
     description="Показывает html-форму для создания нового фильма",
-    include_in_schema=False
 )
 def show_create_film_form(request: Request, db: Session = Depends(get_db)):
     genre_list = db.query(Genre).all()
@@ -50,7 +95,6 @@ def show_create_film_form(request: Request, db: Session = Depends(get_db)):
     status_code=status.HTTP_302_FOUND,
     summary="Create Film",
     description="Обрабатывает отправку формы создания фильма, сохраняет фильм в базе и выполняет редирект на главную страницу",
-    include_in_schema=False
 )
 def create_film(
     title: str = Form(..., min_length=1),

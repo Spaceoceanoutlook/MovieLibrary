@@ -16,18 +16,11 @@ bot.set_my_commands([
     types.BotCommand("genres", "Выбрать жанр")
 ])
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(
-        message.chat.id,
-        "Привет! Загляни в меню",
-    )
-
 @bot.message_handler(commands=['search'])
 def search(message):
     bot.send_message(
         message.chat.id,
-        "Пиши название фильма (можно частично)",
+        "Напиши название фильма:",
     )
 
 @bot.message_handler(commands=['genres'])
@@ -51,25 +44,43 @@ def genres(message):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("genre_"))
 def handle_genre_callback(call):
-    genre = call.data.replace("genre_", "")
+    data = call.data.replace("genre_", "")
+
+    if "|" in data:
+        genre, offset = data.split("|")
+        offset = int(offset)
+    else:
+        genre = data
+        offset = 0
 
     url = f"https://spaceocean.ru/api/filters/genres/{genre}"
     response = requests.get(url)
-    json_data = response.json()
+    films = response.json()
 
     bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, f"🎞 Фильмы жанра *{genre}*:", parse_mode="Markdown")
 
-    for film in json_data:
+    if offset == 0:
+        bot.send_message(call.message.chat.id, f"Фильмы жанра *{genre}*:", parse_mode="Markdown")
+
+    films_slice = films[offset:offset + 5]
+
+    for film in films_slice:
         title = film.get("title")
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton(text="Подробнее", callback_data=f"film_{film['id']}"))
+        bot.send_message(call.message.chat.id, f"🎬 {title}", reply_markup=markup)
 
-        bot.send_message(
-            call.message.chat.id,
-            f"🎬 {title}",
-            reply_markup=markup
+    if offset + 5 < len(films):
+        more_markup = types.InlineKeyboardMarkup()
+        more_markup.add(
+            types.InlineKeyboardButton(
+                text="Еще",
+                callback_data=f"genre_{genre}|{offset + 5}"
+            )
         )
+        bot.send_message(call.message.chat.id,
+            "🍿",
+            reply_markup=more_markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -108,5 +119,4 @@ def handle_film_details(call):
     )
 
 if __name__ == '__main__':
-    print('Bot запущен')
     bot.infinity_polling()

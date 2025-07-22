@@ -30,7 +30,7 @@ def list_films(db: Session = Depends(get_db)):
     description="Позволяет искать фильмы по названию (частичное совпадение)"
 )
 def search_films(
-    q: str = Query(..., min_length=1, description="Название фильма"),
+    q: str = Query(..., min_length=3, description="Название фильма"),
     db: Session = Depends(get_db)
 ):
     films = db.query(Film).filter(Film.title.ilike(f"%{q}%")).all()

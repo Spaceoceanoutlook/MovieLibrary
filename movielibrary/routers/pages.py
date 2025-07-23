@@ -6,6 +6,7 @@ from sqlalchemy import desc
 from movielibrary.schemas.film import FilmRead
 from movielibrary.database import get_db
 from movielibrary.models import Film, FilmGenre, FilmCountry, Genre, Country
+from movielibrary.send_email import send_email
 from typing import List
 from dotenv import load_dotenv
 import os
@@ -128,6 +129,9 @@ def create_film(
             db.add(FilmCountry(film_id=new_film.id, country_id=country_id))
 
         db.commit()
+
+        send_email(new_film.title)
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Ошибка при создании фильма: {e}")

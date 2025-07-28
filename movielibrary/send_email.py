@@ -14,7 +14,7 @@ def send_email(title: str):
     msg = MIMEText(text, 'plain')
     msg['From'] = sender_email
     msg['To'] = sender_email
-    msg['Subject'] = 'Привет, это Spaceocean!'
+    msg['Subject'] = 'Привет от Spaceocean!'
 
     with smtplib.SMTP_SSL('smtp.yandex.ru', 465) as server:
         server.login(sender_email, password)

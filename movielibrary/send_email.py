@@ -13,9 +13,10 @@ def send_email(title: str):
     text = f'На https://spaceocean.ru добавлен новый фильм: {title}'
     msg = MIMEText(text, 'plain')
     msg['From'] = sender_email
-    msg['To'] = sender_email
     msg['Subject'] = 'Привет от Spaceocean!'
 
     with smtplib.SMTP_SSL('smtp.yandex.ru', 465) as server:
         server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_emails, msg.as_string())
+        for receiver_email in receiver_emails:
+            msg['To'] = receiver_email
+            server.sendmail(sender_email, receiver_email, msg.as_string())

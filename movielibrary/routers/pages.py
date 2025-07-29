@@ -76,12 +76,13 @@ def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db
     genres_for_template = [genre for genre in genres]
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template, "genres": genres_for_template})
 
-@router.get("/film/{title}",
+@router.get("/film/{id}",
     response_class=HTMLResponse,
-    summary="Read Film By Title",
-    description="Возвращает HTML-страницу с выбранным фильмом")
-def read_film(title: str, request: Request, db: Session = Depends(get_db)):
-    films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.title == title).all()
+    summary="Read Film By Id",
+    description="Возвращает HTML-страницу с выбранным фильмом"
+)
+def read_film(id: int, request: Request, db: Session = Depends(get_db)):
+    films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id).all()
     films = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
     genres_for_template = [genre for genre in genres]

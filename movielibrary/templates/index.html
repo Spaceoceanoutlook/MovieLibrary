@@ -19,6 +19,17 @@
                 flex-wrap: wrap;
                 gap: 20px;
                 justify-content: center;
+                padding-top: 60px;
+            }
+            .fixed-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                z-index: 1000;
+                padding: 0px 20px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
             .film-card {
                 background-color: #fff;
@@ -87,6 +98,18 @@
         </style>
     </head>
     <body>
+        <div class="fixed-header">
+            <p>
+                <a href="/" style="font-size: 20px; font-weight: bold"
+                    >Главная</a
+                >
+                {% for genre in genres %}
+                <a href="/genres/{{ genre.name | urlencode }}/"
+                    >{{ genre.name }}</a
+                >
+                {% endfor %}
+            </p>
+        </div>
         {% for film in films %}
         <div class="film-card">
             <img

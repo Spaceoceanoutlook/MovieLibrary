@@ -11,8 +11,6 @@ services:
     volumes:
       - .:/app
     restart: always
-    mem_limit: 150m
-    mem_reservation: 100m
 
   db:
     image: postgres:16
@@ -24,16 +22,13 @@ services:
     ports:
       - "5432:5432"
     restart: always
-    mem_limit: 100m
-    mem_reservation: 50m
 
-  bot:
-    build:
-      context: ./telegrambot
-    container_name: movielibrary_bot
-    env_file: .env
-    restart: always
-    mem_limit: 50m
-    mem_reservation: 30m
+  # bot:
+  #   build:
+  #     context: ./telegrambot
+  #   container_name: movielibrary_bot
+  #   env_file: .env
+  #   restart: always
+
 volumes:
   postgres_data:

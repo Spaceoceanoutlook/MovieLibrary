@@ -21,6 +21,12 @@
                 justify-content: center;
                 padding-top: 60px;
             }
+            a {
+                color: #3498db;
+                text-decoration: none;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
             .fixed-header {
                 position: fixed;
                 top: 0;
@@ -117,7 +123,9 @@
                 alt="{{ film.title }}"
             />
             <div class="film-content">
-                <h2>{{ film.title }}</h2>
+                <h2>
+                    <a href="/film/{{ film.title }}"> {{ film.title }} </a>
+                </h2>
                 <p class="year">
                     Год:
                     <a href="/years/{{ film.year }}">{{ film.year }}</a>

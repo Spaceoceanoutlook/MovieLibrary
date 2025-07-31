@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request, Form, status, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 from movielibrary.schemas.film import FilmRead
 from movielibrary.database import get_db
 from movielibrary.models import Film, FilmGenre, FilmCountry, Genre, Country
@@ -28,7 +28,7 @@ COMMON_FILM_OPTIONS = [
     description="Главная страница с HTML-шаблоном. Показывает список жанров и пять случайных фильмов с жанрами и странами",
 )
 def read_films(request: Request, db: Session = Depends(get_db)):
-    films = db.query(Film).options(*COMMON_FILM_OPTIONS).order_by(func.random()).limit(5).all()
+    films = db.query(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
     genres_for_template = [genre for genre in genres]

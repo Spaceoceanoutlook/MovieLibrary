@@ -25,7 +25,7 @@ COMMON_FILM_OPTIONS = [
     "/",
     response_class=HTMLResponse,
     summary="Read Films",
-    description="Главная страница с HTML-шаблоном. Показывает список жанров и пять случайных фильмов с жанрами и странами",
+    description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов с жанрами и странами",
 )
 def read_films(request: Request, db: Session = Depends(get_db)):
     films = db.query(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7).all()

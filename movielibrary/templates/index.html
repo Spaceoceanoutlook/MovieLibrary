@@ -114,18 +114,21 @@
                     >{{ genre.name }}</a
                 >
                 {% endfor %}
+                <a href="/series/">Сериалы</a>
             </p>
         </div>
         {% for film in films %}
         <div class="film-card">
+            <a href="/film/{{ film.id }}">
             <img
                 src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
                 alt="{{ film.title }}"
             />
             <div class="film-content">
                 <h2>
-                    <a href="/film/{{ film.id }}"> {{ film.title }} </a>
+                    {{ film.title }}
                 </h2>
+            </a>
                 <p class="year">
                     Год:
                     <a href="/years/{{ film.year }}">{{ film.year }}</a>

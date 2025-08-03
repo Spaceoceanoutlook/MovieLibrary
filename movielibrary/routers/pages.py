@@ -35,6 +35,19 @@ def read_films(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template, "genres": genres_for_template})
 
 @router.get(
+    "/series/",
+    response_model=List[FilmRead],
+    summary="List Films",
+    description="Возвращает список всех сериалов с жанрами и странами"
+)
+def list_series(request: Request, db: Session = Depends(get_db)):
+    films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.title.ilike("%Сериал%")).order_by(desc(Film.rating)).all()
+    genres = db.query(Genre).all()
+    genres_for_template = [genre for genre in genres]
+    films_for_template = [FilmRead.model_validate(film) for film in films]
+    return templates.TemplateResponse("index.html", {"request": request, "films": films_for_template, "genres": genres_for_template})
+
+@router.get(
     "/genres/{genre_name}",
     response_class=HTMLResponse,
     summary="Read Films By Genre",

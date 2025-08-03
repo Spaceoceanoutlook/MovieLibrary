@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session, joinedload
 from movielibrary.database import get_db
 from movielibrary.schemas.film import FilmRead
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 from typing import List
 from movielibrary.models import Film, FilmGenre, FilmCountry, Country, Genre
 
@@ -81,3 +80,16 @@ def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db
     films = query.order_by(desc(Film.rating)).all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
+
+@router.get(
+    "/series/",
+    response_model=List[FilmRead],
+    summary="List Films",
+    description="Возвращает список всех сериалов с жанрами и странами"
+)
+def list_series(db: Session = Depends(get_db)):
+    films = db.query(Film).options(
+        joinedload(Film.genres).joinedload(FilmGenre.genre),
+        joinedload(Film.countries).joinedload(FilmCountry.country)
+    ).filter(Film.title.ilike("%Сериал%")).all()
+    return films

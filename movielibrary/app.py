@@ -1,6 +1,7 @@
-from fastapi import FastAPI
-from movielibrary.routers import films, filters, pages
 import uvicorn
+from fastapi import FastAPI
+
+from movielibrary.routers import films, filters, pages
 
 app = FastAPI(title="Movie Library API", version="0.1.0")
 

@@ -12,7 +12,7 @@ receiver_emails = os.getenv('RECEIVER_EMAILS', '').split(',')
 def send_email(title: str):
     text = f'На https://spaceocean.ru добавлен новый фильм: {title}'
     msg = MIMEText(text, 'plain')
-    msg['From'] = sender_email
+    msg['From'] = f'"Spaceocean" <{sender_email}>'
     msg['Subject'] = 'Привет от Spaceocean!'
 
     with smtplib.SMTP_SSL('smtp.yandex.ru', 465) as server:

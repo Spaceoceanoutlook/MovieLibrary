@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %} {% endblock %}</title>
+        <link
+            rel="icon"
+            href="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/favicon.png"
+            type="image/png"
+        />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+                padding-top: 60px;
+            }
+            a {
+                color: #3498db;
+                text-decoration: none;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
+            .fixed-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                z-index: 1000;
+                padding: 0px 20px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .film-card {
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                width: 250px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .film-card img {
+                width: 100%;
+                height: 360px;
+                object-fit: cover;
+                display: block;
+            }
+            .film-content {
+                padding: 15px;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .film-content h2 {
+                margin-top: 0;
+                margin-bottom: 10px;
+                font-size: 1.5em;
+                color: #333;
+            }
+            .film-content p {
+                margin-bottom: 5px;
+                color: #666;
+                line-height: 1.4;
+            }
+            .film-content .rating,
+            .film-content .year,
+            .film-content .genres,
+            .film-content .countries {
+                font-size: 0.9em;
+                color: #888;
+                margin-top: auto;
+            }
+            .film-content .rating b {
+                color: #3bb33b;
+            }
+            .film-content .year a,
+            .film-content .genres a,
+            .film-content .countries a {
+                display: inline-block;
+                background-color: #e0e0e0;
+                border-radius: 3px;
+                padding: 3px 7px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                color: #333;
+                text-decoration: none;
+                font-size: 0.9em;
+                transition: background-color 0.2s;
+            }
+            .film-content .year a:hover,
+            .film-content .genres a:hover,
+            .film-content .countries a:hover {
+                background-color: #d5d5d5;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="fixed-header">
+            <p>
+                <a href="/" style="font-size: 20px; font-weight: bold"
+                    >Главная</a
+                >
+                {% block header_links %} {% for genre in genres %}
+                <a href="/genres/{{ genre.name | urlencode }}/"
+                    >{{ genre.name }}</a
+                >
+                {% endfor %} {% endblock %}
+                <a href="/series/">Сериалы</a>
+            </p>
+        </div>
+
+        {% block content %} {% endblock %}
+    </body>
+</html>

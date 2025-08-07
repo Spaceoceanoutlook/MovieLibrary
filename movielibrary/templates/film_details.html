@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block title %} {% endblock %} {% block content %}
+{% for film in films %}
+<div class="film-card">
+    <a href="/film/{{ film.id }}">
+        <img
+            src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
+            alt="{{ film.title }}"
+        />
+        <div class="film-content">
+            <h2>{{ film.title }}</h2>
+        </div>
+    </a>
+    <div class="film-content">
+        <p class="year">
+            Год:
+            <a href="/years/{{ film.year }}">{{ film.year }}</a>
+        </p>
+        <p class="rating">
+        Рейтинг: <b>{{ film.rating }}</b></p>
+        </p>
+        <p>{{ film.description }}</p>
+        {% if film.genres %}
+        <div class="genres">
+            Жанры: {% for genre in film.genres %}
+            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
+            {% endfor %}
+        </div>
+        {% endif %} {% if film.countries %}
+        <div class="countries">
+            Страны: {% for country in film.countries %}
+            <a href="/countries/{{ country.name | urlencode }}/"
+                >{{ country.name }}</a
+            >
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %} {% endblock %}

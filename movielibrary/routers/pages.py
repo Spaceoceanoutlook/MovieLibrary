@@ -99,7 +99,7 @@ def read_film(id: int, request: Request, db: Session = Depends(get_db)):
     films = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
     genres_for_template = [genre for genre in genres]
-    return templates.TemplateResponse("index.html", {"request": request, "films": films, "genres": genres_for_template})
+    return templates.TemplateResponse("film_details.html", {"request": request, "films": films, "genres": genres_for_template})
 
 @router.get(
     "/create",

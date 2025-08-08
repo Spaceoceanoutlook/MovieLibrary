@@ -37,7 +37,7 @@ def list_countries(db: Session = Depends(get_db)):
     summary="List Films By Genre",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному жанру"
 )
-def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends(get_db)):
+def read_films_by_genre(genre_name: str, db: Session = Depends(get_db)):
     query = db.query(Film).options(
         joinedload(Film.genres).joinedload(FilmGenre.genre),
         joinedload(Film.countries).joinedload(FilmCountry.country)
@@ -54,7 +54,7 @@ def read_films_by_genre(genre_name: str, request: Request, db: Session = Depends
     summary="List Films By Country",
     description="Возвращает список всех фильмов, отфильтрованными по выбранной стране"
 )
-def read_films_by_country(country_name: str, request: Request, db: Session = Depends(get_db)):
+def read_films_by_country(country_name: str, db: Session = Depends(get_db)):
     query = db.query(Film).options(
         joinedload(Film.genres).joinedload(FilmGenre.genre),
         joinedload(Film.countries).joinedload(FilmCountry.country)
@@ -71,7 +71,7 @@ def read_films_by_country(country_name: str, request: Request, db: Session = Dep
     summary="List Films By Year",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному году выпуска"
 )
-def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db)):
+def read_films_by_year(year: int, db: Session = Depends(get_db)):
     query = db.query(Film).options(
         joinedload(Film.genres).joinedload(FilmGenre.genre),
         joinedload(Film.countries).joinedload(FilmCountry.country)

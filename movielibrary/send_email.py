@@ -11,7 +11,7 @@ password = os.getenv("EMAIL_APP_PASSWORD", "")
 receiver_emails = os.getenv("RECEIVER_EMAILS", "").split(",")
 
 
-def send_email(title: str):
+def send_email(title: str) -> None:
     text = f"На https://spaceocean.ru добавлен новый фильм: {title}"
     msg = MIMEText(text, "plain")
     msg["From"] = f'"Spaceocean" <{sender_email}>'

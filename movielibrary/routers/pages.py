@@ -40,7 +40,7 @@ def read_films(request: Request, db: Session = Depends(get_db)):
     )
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
         {
@@ -66,7 +66,7 @@ def list_series(request: Request, db: Session = Depends(get_db)):
         .all()
     )
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse(
         "index.html",
@@ -99,7 +99,7 @@ def read_films_by_genre(
     films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
         {
@@ -131,7 +131,7 @@ def read_films_by_country(
     films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
         {
@@ -153,7 +153,7 @@ def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db
     films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
         {
@@ -174,7 +174,7 @@ def read_film(id: int, request: Request, db: Session = Depends(get_db)):
     films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id).all()
     films = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
-    genres_for_template = [genre for genre in genres]
+    genres_for_template = list(genres)
     return templates.TemplateResponse(
         "film_details.html",
         {"request": request, "films": films, "genres": genres_for_template},

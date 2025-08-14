@@ -1,15 +1,17 @@
-from fastapi import APIRouter, Depends, Request, Form, status, HTTPException
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import desc
-from movielibrary.schemas.film import FilmRead
-from movielibrary.database import get_db
-from movielibrary.models import Film, FilmGenre, FilmCountry, Genre, Country
-from movielibrary.send_email import send_email
-from typing import List
-from dotenv import load_dotenv
 import os
+from typing import List
+
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy import desc
+from sqlalchemy.orm import Session, joinedload
+
+from movielibrary.database import get_db
+from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
+from movielibrary.schemas.film import FilmRead
+from movielibrary.send_email import send_email
 
 load_dotenv()
 

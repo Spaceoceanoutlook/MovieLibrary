@@ -1,11 +1,13 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc
 from sqlalchemy.orm import Session, joinedload
+
 from movielibrary.database import get_db
+from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
 from movielibrary.schemas.film import FilmRead
-from fastapi.templating import Jinja2Templates
-from typing import List
-from movielibrary.models import Film, FilmGenre, FilmCountry, Country, Genre
 
 templates = Jinja2Templates(directory="movielibrary/templates")
 router = APIRouter()

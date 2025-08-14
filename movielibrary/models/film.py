@@ -1,8 +1,10 @@
 from typing import List
+
+from sqlalchemy import Float, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, Float
+
+from .associations import FilmCountry, FilmGenre
 from .base import Base
-from .associations import FilmGenre, FilmCountry
 
 
 class Film(Base):

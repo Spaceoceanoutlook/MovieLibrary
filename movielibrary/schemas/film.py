@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
-from .genre import GenreRead
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from .country import CountryRead
+from .genre import GenreRead
 
 
 class FilmBase(BaseModel):

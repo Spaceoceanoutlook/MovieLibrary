@@ -1,12 +1,14 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .base import Base
-from sqlalchemy import ForeignKey
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import Base
+
 if TYPE_CHECKING:
+    from .country import Country
     from .film import Film
     from .genre import Genre
-    from .country import Country
 
 
 class FilmGenre(Base):

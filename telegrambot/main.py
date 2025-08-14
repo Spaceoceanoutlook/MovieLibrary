@@ -1,8 +1,9 @@
-import telebot
-from telebot import types
-import requests
-from dotenv import load_dotenv
 import os
+
+import requests
+import telebot
+from dotenv import load_dotenv
+from telebot import types
 
 load_dotenv()
 

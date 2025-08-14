@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
 from typing import List
-from movielibrary.models import Film, FilmCountry, FilmGenre
-from movielibrary.database import get_db
-from movielibrary.schemas.film import FilmRead, FilmBase
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload
+
+from movielibrary.database import get_db
+from movielibrary.models import Film, FilmCountry, FilmGenre
+from movielibrary.schemas.film import FilmBase, FilmRead
 
 router = APIRouter()
 

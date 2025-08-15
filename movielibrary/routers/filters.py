@@ -13,20 +13,29 @@ from movielibrary.schemas.film import FilmRead
 templates = Jinja2Templates(directory="movielibrary/templates")
 router = APIRouter()
 
+COMMON_FILM_OPTIONS = [
+    joinedload(Film.genres).joinedload(FilmGenre.genre),
+    joinedload(Film.countries).joinedload(FilmCountry.country),
+]
+
 
 @router.get(
     "/genres/", summary="List Genres", description="Возвращает список всех жанров"
 )
-def list_genres(db: AsyncSession = Depends(get_db)):
-    genres = select(Genre).all()
+async def list_genres(db: AsyncSession = Depends(get_db)):
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     return [g.name for g in genres]
 
 
 @router.get(
     "/countries/", summary="List Countries", description="Возвращает список всех стран"
 )
-def list_countries(db: AsyncSession = Depends(get_db)):
-    countries = db.query(Country).all()
+async def list_countries(db: AsyncSession = Depends(get_db)):
+    stmt = select(Country)
+    result = await db.execute(stmt)
+    countries = result.scalars().all()
     return [c.name for c in countries]
 
 
@@ -36,19 +45,17 @@ def list_countries(db: AsyncSession = Depends(get_db)):
     summary="List Films By Genre",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному жанру",
 )
-def read_films_by_genre(genre_name: str, db: AsyncSession = Depends(get_db)):
-    query = (
+async def read_films_by_genre(genre_name: str, db: AsyncSession = Depends(get_db)):
+    stmt = (
         select(Film)
-        .options(
-            joinedload(Film.genres).joinedload(FilmGenre.genre),
-            joinedload(Film.countries).joinedload(FilmCountry.country),
-        )
+        .options(*COMMON_FILM_OPTIONS)
         .join(Film.genres)
         .join(FilmGenre.genre)
         .filter(Genre.name == genre_name)
+        .order_by(desc(Film.rating))
     )
-
-    films = query.order_by(desc(Film.rating)).all()
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -59,19 +66,18 @@ def read_films_by_genre(genre_name: str, db: AsyncSession = Depends(get_db)):
     summary="List Films By Country",
     description="Возвращает список всех фильмов, отфильтрованными по выбранной стране",
 )
-def read_films_by_country(country_name: str, db: AsyncSession = Depends(get_db)):
-    query = (
-        db.query(Film)
-        .options(
-            joinedload(Film.genres).joinedload(FilmGenre.genre),
-            joinedload(Film.countries).joinedload(FilmCountry.country),
-        )
+async def read_films_by_country(country_name: str, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Film)
+        .options(*COMMON_FILM_OPTIONS)
         .join(Film.countries)
         .join(FilmCountry.country)
         .filter(Country.name == country_name)
+        .order_by(desc(Film.rating))
     )
 
-    films = query.order_by(desc(Film.rating)).all()
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -82,17 +88,16 @@ def read_films_by_country(country_name: str, db: AsyncSession = Depends(get_db))
     summary="List Films By Year",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному году выпуска",
 )
-def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
-    query = (
-        db.query(Film)
-        .options(
-            joinedload(Film.genres).joinedload(FilmGenre.genre),
-            joinedload(Film.countries).joinedload(FilmCountry.country),
-        )
+async def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Film)
+        .options(*COMMON_FILM_OPTIONS)
         .filter(Film.year == year)
+        .order_by(desc(Film.rating))
     )
 
-    films = query.order_by(desc(Film.rating)).all()
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -103,14 +108,13 @@ def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
     summary="List Films",
     description="Возвращает список всех сериалов с жанрами и странами",
 )
-def list_series(db: AsyncSession = Depends(get_db)):
-    films = (
-        db.query(Film)
-        .options(
-            joinedload(Film.genres).joinedload(FilmGenre.genre),
-            joinedload(Film.countries).joinedload(FilmCountry.country),
-        )
+async def list_series(db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Film)
+        .options(*COMMON_FILM_OPTIONS)
         .filter(Film.title.ilike("%Сериал%"))
-        .all()
+        .order_by(desc(Film.rating))
     )
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     return films

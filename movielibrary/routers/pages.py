@@ -33,11 +33,12 @@ COMMON_FILM_OPTIONS = [
 )
 async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7)
-
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
-    genres = db.query(Genre).all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
@@ -55,15 +56,18 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     summary="List Films",
     description="Возвращает список всех сериалов с жанрами и странами",
 )
-def list_series(request: Request, db: AsyncSession = Depends(get_db)):
-    films = (
-        db.query(Film)
+async def list_series(request: Request, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Film)
         .options(*COMMON_FILM_OPTIONS)
         .filter(Film.title.ilike("%Сериал%"))
         .order_by(desc(Film.rating))
-        .all()
     )
-    genres = db.query(Genre).all()
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     films_for_template = [FilmRead.model_validate(film) for film in films]
     return templates.TemplateResponse(
@@ -82,21 +86,25 @@ def list_series(request: Request, db: AsyncSession = Depends(get_db)):
     summary="Read Films By Genre",
     description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному жанру",
 )
-def read_films_by_genre(
+async def read_films_by_genre(
     genre_name: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    query = (
-        db.query(Film)
+    stmt = (
+        select(Film)
         .options(*COMMON_FILM_OPTIONS)
         .join(Film.genres)
         .join(FilmGenre.genre)
         .filter(Genre.name == genre_name)
+        .order_by(desc(Film.rating))
     )
-    films = query.order_by(desc(Film.rating)).all()
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
-    genres = db.query(Genre).all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
@@ -114,21 +122,26 @@ def read_films_by_genre(
     summary="Read Films By Country",
     description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранной стране",
 )
-def read_films_by_country(
+async def read_films_by_country(
     country_name: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    query = (
-        db.query(Film)
+    stmt = (
+        select(Film)
         .options(*COMMON_FILM_OPTIONS)
         .join(Film.countries)
         .join(FilmCountry.country)
         .filter(Country.name == country_name)
+        .order_by(desc(Film.rating))
     )
-    films = query.order_by(desc(Film.rating)).all()
+
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
-    genres = db.query(Genre).all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
@@ -146,11 +159,22 @@ def read_films_by_country(
     summary="Read Films By Year",
     description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска",
 )
-def read_films_by_year(year: int, request: Request, db: AsyncSession = Depends(get_db)):
-    query = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.year == year)
-    films = query.order_by(desc(Film.rating)).all()
+async def read_films_by_year(
+    year: int, request: Request, db: AsyncSession = Depends(get_db)
+):
+    stmt = (
+        select(Film)
+        .options(*COMMON_FILM_OPTIONS)
+        .filter(Film.year == year)
+        .order_by(desc(Film.rating))
+    )
+
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
-    genres = db.query(Genre).all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "index.html",
@@ -168,10 +192,15 @@ def read_films_by_year(year: int, request: Request, db: AsyncSession = Depends(g
     summary="Read Film By Id",
     description="Возвращает HTML-страницу с выбранным фильмом",
 )
-def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
-    films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id).all()
+async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
+    stmt = select(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id)
+    result = await db.execute(stmt)
+    result = result.unique()
+    films = result.scalars().all()
     films = [FilmRead.model_validate(film) for film in films]
-    genres = db.query(Genre).all()
+    stmt = select(Genre)
+    result = await db.execute(stmt)
+    genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "film_details.html",
@@ -185,9 +214,15 @@ def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
     summary="Show Create Film Form",
     description="Показывает html-форму для создания нового фильма",
 )
-def show_create_film_form(request: Request, db: AsyncSession = Depends(get_db)):
-    genre_list = db.query(Genre).all()
-    country_list = db.query(Country).all()
+async def show_create_film_form(request: Request, db: AsyncSession = Depends(get_db)):
+    stmt_genre = select(Genre)
+    result_genre = await db.execute(stmt_genre)
+    genre_list = result_genre.scalars().all()
+
+    stmt_country = select(Country)
+    result_country = await db.execute(stmt_country)
+    country_list = result_country.scalars().all()
+
     return templates.TemplateResponse(
         "create.html",
         {"request": request, "genre_list": genre_list, "country_list": country_list},
@@ -200,7 +235,7 @@ def show_create_film_form(request: Request, db: AsyncSession = Depends(get_db)):
     summary="Create Film",
     description="Обрабатывает отправку формы создания фильма, сохраняет фильм в базе и выполняет редирект на главную страницу",
 )
-def create_film(
+async def create_film(
     title: str = Form(..., min_length=1),
     year: int = Form(..., ge=1895),
     rating: float = Form(..., ge=0, le=10),
@@ -213,26 +248,24 @@ def create_film(
 ):
     if code != os.getenv("VALID_CODE"):
         raise HTTPException(status_code=400, detail="Неверный код доступа")
+
     new_film = Film(
         title=title, year=year, description=description, rating=rating, photo=photo
     )
-
     try:
         db.add(new_film)
-        db.commit()
-        db.refresh(new_film)
+        await db.commit()
+        await db.refresh(new_film)
 
         for genre_id in genres:
             db.add(FilmGenre(film_id=new_film.id, genre_id=genre_id))
         for country_id in countries:
             db.add(FilmCountry(film_id=new_film.id, country_id=country_id))
 
-        db.commit()
-
+        await db.commit()
         send_email(new_film.title)
-
     except Exception:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
             status_code=500, detail="Ошибка при создании фильма"
         ) from None

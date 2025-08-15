@@ -12,7 +12,7 @@ from sqlalchemy.orm import joinedload
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
 from movielibrary.schemas.film import FilmRead
-from movielibrary.send_email import send_email
+from movielibrary.send_email import send_email_async
 
 load_dotenv()
 
@@ -263,7 +263,8 @@ async def create_film(
             db.add(FilmCountry(film_id=new_film.id, country_id=country_id))
 
         await db.commit()
-        send_email(new_film.title)
+        await send_email_async(new_film.title)
+
     except Exception:
         await db.rollback()
         raise HTTPException(

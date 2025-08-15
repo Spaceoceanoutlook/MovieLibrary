@@ -1,8 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from movielibrary.database import get_db
 from movielibrary.models import Film, FilmCountry, FilmGenre
@@ -17,29 +18,29 @@ router = APIRouter()
     summary="List Films",
     description="Возвращает список всех фильмов с жанрами и странами",
 )
-def list_films(db: Session = Depends(get_db)):
-    films = (
-        db.query(Film)
-        .options(
-            joinedload(Film.genres).joinedload(FilmGenre.genre),
-            joinedload(Film.countries).joinedload(FilmCountry.country),
-        )
-        .all()
+async def list_films(db: AsyncSession = Depends(get_db)):
+    stmt = select(Film).options(
+        joinedload(Film.genres).joinedload(FilmGenre.genre),
+        joinedload(Film.countries).joinedload(FilmCountry.country),
     )
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     return films
 
 
 @router.get(
     "/search",
-    response_model=List[FilmRead],
+    response_model=List[FilmBase],
     summary="Search Films by Title",
     description="Позволяет искать фильмы по названию (частичное совпадение)",
 )
-def search_films(
+async def search_films(
     q: str = Query(..., min_length=3, description="Название фильма"),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
-    films = db.query(Film).filter(Film.title.ilike(f"%{q}%")).all()
+    stmt = select(Film).filter(Film.title.ilike(f"%{q}%"))
+    result = await db.execute(stmt)
+    films = result.scalars().all()
     return films
 
 
@@ -49,9 +50,12 @@ def search_films(
     summary="Get films statistics",
     description="Показывает общую информацию о библиотеке фильмов",
 )
-def get_films_statistics(db: Session = Depends(get_db)):
-    films_count = db.query(Film).count()
-    average_rating = db.query(func.avg(Film.rating)).scalar() or 0.0
+async def get_films_statistics(db: AsyncSession = Depends(get_db)):
+    result_count = await db.execute(select(func.count(Film.id)))
+    films_count = result_count.scalar() or 0
+
+    result_avg = await db.execute(select(func.avg(Film.rating)))
+    average_rating = result_avg.scalar() or 0.0
 
     return {"total_films": films_count, "average_rating": round(average_rating, 2)}
 
@@ -62,16 +66,17 @@ def get_films_statistics(db: Session = Depends(get_db)):
     summary="Retrieve Film",
     description="Возвращает подробную информацию о фильме по его ID, включая жанры и страны",
 )
-def retrieve_film(film_id: int, db: Session = Depends(get_db)):
-    film = (
-        db.query(Film)
+async def retrieve_film(film_id: int, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Film)
         .options(
             joinedload(Film.genres).joinedload(FilmGenre.genre),
             joinedload(Film.countries).joinedload(FilmCountry.country),
         )
         .filter(Film.id == film_id)
-        .first()
     )
+    result = await db.execute(stmt)
+    film = result.unique().scalars().first()
     if not film:
         raise HTTPException(status_code=404, detail="Фильм не найден")
     return film

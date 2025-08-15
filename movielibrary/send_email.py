@@ -1,24 +1,35 @@
 import os
-import smtplib
 from email.mime.text import MIMEText
 
+import aiosmtplib
 from dotenv import load_dotenv
 
 load_dotenv()
 
 sender_email = os.getenv("EMAIL", "")
 password = os.getenv("EMAIL_APP_PASSWORD", "")
-receiver_emails = os.getenv("RECEIVER_EMAILS", "").split(",")
+receiver_emails = [
+    email.strip()
+    for email in os.getenv("RECEIVER_EMAILS", "").split(",")
+    if email.strip()
+]
 
 
-def send_email(title: str) -> None:
-    text = f"На https://spaceocean.ru добавлен новый фильм: {title}"
-    msg = MIMEText(text, "plain")
-    msg["From"] = f'"Spaceocean" <{sender_email}>'
-    msg["Subject"] = "Привет от Spaceocean!"
+async def send_email_async(title: str) -> None:
+    for receiver_email in receiver_emails:
+        text = f"На https://spaceocean.ru добавлен новый фильм: {title}"
+        msg = MIMEText(text, "plain")
+        msg["From"] = f'"Spaceocean" <{sender_email}>'
+        msg["To"] = receiver_email
+        msg["Subject"] = "Привет от Spaceocean!"
 
-    with smtplib.SMTP_SSL("smtp.yandex.ru", 465) as server:
-        server.login(sender_email, password)
-        for receiver_email in receiver_emails:
-            msg["To"] = receiver_email
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+        await aiosmtplib.send(
+            msg,
+            sender=sender_email,
+            recipients=[receiver_email],
+            hostname="smtp.yandex.ru",
+            port=465,
+            username=sender_email,
+            password=password,
+            use_tls=True,
+        )

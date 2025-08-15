@@ -2,8 +2,9 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import desc
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
@@ -16,15 +17,15 @@ router = APIRouter()
 @router.get(
     "/genres/", summary="List Genres", description="Возвращает список всех жанров"
 )
-def list_genres(db: Session = Depends(get_db)):
-    genres = db.query(Genre).all()
+def list_genres(db: AsyncSession = Depends(get_db)):
+    genres = select(Genre).all()
     return [g.name for g in genres]
 
 
 @router.get(
     "/countries/", summary="List Countries", description="Возвращает список всех стран"
 )
-def list_countries(db: Session = Depends(get_db)):
+def list_countries(db: AsyncSession = Depends(get_db)):
     countries = db.query(Country).all()
     return [c.name for c in countries]
 
@@ -35,9 +36,9 @@ def list_countries(db: Session = Depends(get_db)):
     summary="List Films By Genre",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному жанру",
 )
-def read_films_by_genre(genre_name: str, db: Session = Depends(get_db)):
+def read_films_by_genre(genre_name: str, db: AsyncSession = Depends(get_db)):
     query = (
-        db.query(Film)
+        select(Film)
         .options(
             joinedload(Film.genres).joinedload(FilmGenre.genre),
             joinedload(Film.countries).joinedload(FilmCountry.country),
@@ -58,7 +59,7 @@ def read_films_by_genre(genre_name: str, db: Session = Depends(get_db)):
     summary="List Films By Country",
     description="Возвращает список всех фильмов, отфильтрованными по выбранной стране",
 )
-def read_films_by_country(country_name: str, db: Session = Depends(get_db)):
+def read_films_by_country(country_name: str, db: AsyncSession = Depends(get_db)):
     query = (
         db.query(Film)
         .options(
@@ -81,7 +82,7 @@ def read_films_by_country(country_name: str, db: Session = Depends(get_db)):
     summary="List Films By Year",
     description="Возвращает список всех фильмов, отфильтрованными по выбранному году выпуска",
 )
-def read_films_by_year(year: int, db: Session = Depends(get_db)):
+def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
     query = (
         db.query(Film)
         .options(
@@ -102,7 +103,7 @@ def read_films_by_year(year: int, db: Session = Depends(get_db)):
     summary="List Films",
     description="Возвращает список всех сериалов с жанрами и странами",
 )
-def list_series(db: Session = Depends(get_db)):
+def list_series(db: AsyncSession = Depends(get_db)):
     films = (
         db.query(Film)
         .options(

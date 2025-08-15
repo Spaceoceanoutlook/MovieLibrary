@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import desc
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
@@ -30,14 +31,11 @@ COMMON_FILM_OPTIONS = [
     summary="Read Films",
     description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов с жанрами и странами",
 )
-def read_films(request: Request, db: Session = Depends(get_db)):
-    films = (
-        db.query(Film)
-        .options(*COMMON_FILM_OPTIONS)
-        .order_by(desc(Film.id))
-        .limit(7)
-        .all()
-    )
+async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
+    stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7)
+
+    result = await db.execute(stmt)
+    films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
     genres_for_template = list(genres)
@@ -57,7 +55,7 @@ def read_films(request: Request, db: Session = Depends(get_db)):
     summary="List Films",
     description="Возвращает список всех сериалов с жанрами и странами",
 )
-def list_series(request: Request, db: Session = Depends(get_db)):
+def list_series(request: Request, db: AsyncSession = Depends(get_db)):
     films = (
         db.query(Film)
         .options(*COMMON_FILM_OPTIONS)
@@ -87,7 +85,7 @@ def list_series(request: Request, db: Session = Depends(get_db)):
 def read_films_by_genre(
     genre_name: str,
     request: Request,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     query = (
         db.query(Film)
@@ -119,7 +117,7 @@ def read_films_by_genre(
 def read_films_by_country(
     country_name: str,
     request: Request,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     query = (
         db.query(Film)
@@ -148,7 +146,7 @@ def read_films_by_country(
     summary="Read Films By Year",
     description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска",
 )
-def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db)):
+def read_films_by_year(year: int, request: Request, db: AsyncSession = Depends(get_db)):
     query = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.year == year)
     films = query.order_by(desc(Film.rating)).all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
@@ -170,7 +168,7 @@ def read_films_by_year(year: int, request: Request, db: Session = Depends(get_db
     summary="Read Film By Id",
     description="Возвращает HTML-страницу с выбранным фильмом",
 )
-def read_film(id: int, request: Request, db: Session = Depends(get_db)):
+def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
     films = db.query(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id).all()
     films = [FilmRead.model_validate(film) for film in films]
     genres = db.query(Genre).all()
@@ -187,7 +185,7 @@ def read_film(id: int, request: Request, db: Session = Depends(get_db)):
     summary="Show Create Film Form",
     description="Показывает html-форму для создания нового фильма",
 )
-def show_create_film_form(request: Request, db: Session = Depends(get_db)):
+def show_create_film_form(request: Request, db: AsyncSession = Depends(get_db)):
     genre_list = db.query(Genre).all()
     country_list = db.query(Country).all()
     return templates.TemplateResponse(
@@ -211,7 +209,7 @@ def create_film(
     code: str = Form(...),
     genres: List[int] = Form([]),
     countries: List[int] = Form([]),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     if code != os.getenv("VALID_CODE"):
         raise HTTPException(status_code=400, detail="Неверный код доступа")

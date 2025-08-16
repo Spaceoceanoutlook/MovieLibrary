@@ -9,4 +9,4 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-root
 COPY . .
 EXPOSE 8000
-CMD ["uvicorn", "movielibrary.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "movielibrary.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -2,7 +2,15 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Form,
+    HTTPException,
+    Request,
+    status,
+)
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc, select
@@ -236,6 +244,7 @@ async def show_create_film_form(request: Request, db: AsyncSession = Depends(get
     description="Обрабатывает отправку формы создания фильма, сохраняет фильм в базе и выполняет редирект на главную страницу",
 )
 async def create_film(
+    background_tasks: BackgroundTasks,
     title: str = Form(..., min_length=1),
     year: int = Form(..., ge=1895),
     rating: float = Form(..., ge=0, le=10),
@@ -252,10 +261,11 @@ async def create_film(
     new_film = Film(
         title=title, year=year, description=description, rating=rating, photo=photo
     )
+
     try:
+        new_film = Film(title=title, year=year, rating=rating, description=description)
         db.add(new_film)
-        await db.commit()
-        await db.refresh(new_film)
+        await db.flush()
 
         for genre_id in genres:
             db.add(FilmGenre(film_id=new_film.id, genre_id=genre_id))
@@ -263,12 +273,11 @@ async def create_film(
             db.add(FilmCountry(film_id=new_film.id, country_id=country_id))
 
         await db.commit()
-        await send_email_async(new_film.title)
-
     except Exception:
         await db.rollback()
         raise HTTPException(
             status_code=500, detail="Ошибка при создании фильма"
         ) from None
 
+    background_tasks.add_task(send_email_async, new_film.title)
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)

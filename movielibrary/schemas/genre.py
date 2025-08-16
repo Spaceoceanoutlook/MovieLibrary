@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GenreBase(BaseModel):
@@ -9,8 +9,6 @@ class GenreCreate(GenreBase):
     pass
 
 
-class GenreRead(GenreBase):
+class GenreRead(BaseModel):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

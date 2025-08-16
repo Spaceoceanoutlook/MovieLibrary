@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CountryBase(BaseModel):
@@ -11,6 +11,4 @@ class CountryCreate(CountryBase):
 
 class CountryRead(CountryBase):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

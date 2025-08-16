@@ -1,10 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from movielibrary.routers import films, filters, pages
 
 app = FastAPI(title="Movie Library API", version="0.1.0")
-
+app.mount("/static", StaticFiles(directory="movielibrary/static"), name="static")
 app.include_router(films.router, prefix="/api/films", tags=["Films"])
 app.include_router(filters.router, prefix="/api/filters", tags=["Filters"])
 app.include_router(pages.router, tags=["Web Pages"], include_in_schema=False)

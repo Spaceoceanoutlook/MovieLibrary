@@ -14,8 +14,14 @@
     <body>
         <div class="fixed-header">
             <p>
-                <a href="/" style="font-size: 20px; font-weight: bold"
-                    >Главная</a
+                <a
+                    href="/"
+                    style="
+                        font-size: 30px;
+                        font-weight: bold;
+                        margin-right: 50px;
+                    "
+                    >spaceocean</a
                 >
                 {% block header_links %} {% for genre in genres %}
                 <a href="/genres/{{ genre.name | urlencode }}/"

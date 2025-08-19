@@ -87,3 +87,18 @@ a {
 .film-content .countries a:hover {
     background-color: #d5d5d5;
 }
+.film-card-detail {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 8px;
+    max-width: 900px;
+}
+.film-card-detail img {
+    width: 300px;
+    height: auto;
+    margin-right: 15px;
+    border-radius: 4px;
+}

@@ -1,23 +1,19 @@
 {% extends "base.html" %} {% block title %} {% endblock %} {% block content %}
 {% for film in films %}
-<div class="film-card">
+<div class="film-card-detail">
     <a href="/film/{{ film.id }}">
         <img
             src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
             alt="{{ film.title }}"
         />
-        <div class="film-content">
-            <h2>{{ film.title }}</h2>
-        </div>
     </a>
     <div class="film-content">
+        <h2>{{ film.title }}</h2>
         <p class="year">
             Год:
             <a href="/years/{{ film.year }}">{{ film.year }}</a>
         </p>
-        <p class="rating">
-        Рейтинг: <b>{{ film.rating }}</b></p>
-        </p>
+        <p class="rating">Рейтинг: <b>{{ film.rating }}</b></p>
         <p>{{ film.description }}</p>
         {% if film.genres %}
         <div class="genres">

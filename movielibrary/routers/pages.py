@@ -8,12 +8,13 @@ from fastapi import (
     Depends,
     Form,
     HTTPException,
+    Query,
     Request,
     status,
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import desc, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -37,53 +38,79 @@ COMMON_FILM_OPTIONS = [
     "/",
     response_class=HTMLResponse,
     summary="Read Films",
-    description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов с жанрами и странами",
+    description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов",
 )
 async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7)
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
+
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
     genres_for_template = list(genres)
+
+    page = 1
+    total_pages = 1
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "films": films_for_template,
             "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 
 
 @router.get(
     "/series/",
-    response_model=List[FilmRead],
-    summary="List Films",
+    summary="List Films with pagination",
     description="Возвращает список всех сериалов с жанрами и странами",
 )
-async def list_series(request: Request, db: AsyncSession = Depends(get_db)):
+async def list_series(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = 7,
+):
+    total_stmt = (
+        select(func.count()).select_from(Film).filter(Film.title.ilike("%Сериал%"))
+    )
+    total_result = await db.execute(total_stmt)
+    total_films = total_result.scalar()
+
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
         .filter(Film.title.ilike("%Сериал%"))
         .order_by(desc(Film.rating))
+        .limit(page_size)
+        .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
+
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
+
     genres_for_template = list(genres)
     films_for_template = [FilmRead.model_validate(film) for film in films]
+
+    total_pages = (total_films + page_size - 1) // page_size
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "films": films_for_template,
             "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 
@@ -98,7 +125,19 @@ async def read_films_by_genre(
     genre_name: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = 7,
 ):
+    total_stmt = (
+        select(func.count())
+        .select_from(Film)
+        .join(Film.genres)
+        .join(FilmGenre.genre)
+        .filter(Genre.name == genre_name)
+    )
+    total_result = await db.execute(total_stmt)
+    total_films = total_result.scalar()
+
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
@@ -106,20 +145,28 @@ async def read_films_by_genre(
         .join(FilmGenre.genre)
         .filter(Genre.name == genre_name)
         .order_by(desc(Film.rating))
+        .limit(page_size)
+        .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
+
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
     genres_for_template = list(genres)
+
+    total_pages = (total_films + page_size - 1) // page_size
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "films": films_for_template,
             "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 
@@ -134,7 +181,19 @@ async def read_films_by_country(
     country_name: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = 7,
 ):
+    total_stmt = (
+        select(func.count())
+        .select_from(Film)
+        .join(Film.countries)
+        .join(FilmCountry.country)
+        .filter(Country.name == country_name)
+    )
+    total_result = await db.execute(total_stmt)
+    total_films = total_result.scalar()
+
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
@@ -142,21 +201,28 @@ async def read_films_by_country(
         .join(FilmCountry.country)
         .filter(Country.name == country_name)
         .order_by(desc(Film.rating))
+        .limit(page_size)
+        .offset((page - 1) * page_size)
     )
-
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
+
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
     genres_for_template = list(genres)
+
+    total_pages = (total_films + page_size - 1) // page_size
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "films": films_for_template,
             "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 
@@ -168,28 +234,43 @@ async def read_films_by_country(
     description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска",
 )
 async def read_films_by_year(
-    year: int, request: Request, db: AsyncSession = Depends(get_db)
+    year: int,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = 7,
 ):
+    total_stmt = select(func.count()).select_from(Film).filter(Film.year == year)
+    total_result = await db.execute(total_stmt)
+    total_films = total_result.scalar()
+
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
         .filter(Film.year == year)
         .order_by(desc(Film.rating))
+        .limit(page_size)
+        .offset((page - 1) * page_size)
     )
-
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
+
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
     genres_for_template = list(genres)
+
+    total_pages = (total_films + page_size - 1) // page_size
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "films": films_for_template,
             "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 

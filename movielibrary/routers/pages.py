@@ -263,7 +263,6 @@ async def create_film(
     )
 
     try:
-        new_film = Film(title=title, year=year, rating=rating, description=description)
         db.add(new_film)
         await db.flush()
 

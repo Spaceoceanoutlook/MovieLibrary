@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
@@ -11,6 +10,7 @@ body {
 }
 a {
     color: #3498db;
+    font-size: 18px;
     text-decoration: none;
     padding: 2px 4px;
     border-radius: 3px;
@@ -22,11 +22,13 @@ a {
     width: 100%;
     background: white;
     z-index: 1000;
-    padding: 0px 20px;
+    padding: 20px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 .film-card {
     background-color: #fff;
+    margin-top: 90px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 250px;
@@ -93,6 +95,7 @@ a {
     margin: 20px auto;
     border: 1px solid #ddd;
     padding: 5px;
+    margin-top: 90px;
     border-radius: 8px;
     max-width: 900px;
 }
@@ -101,4 +104,10 @@ a {
     height: auto;
     margin-right: 15px;
     border-radius: 4px;
+}
+.auth-button {
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    margin-left: 70px;
 }

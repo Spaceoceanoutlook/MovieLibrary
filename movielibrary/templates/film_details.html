@@ -1,5 +1,5 @@
-{% extends "base.html" %} {% block title %} {% endblock %} {% block content %}
-{% for film in films %}
+{% extends "base.html" %} {% block title %} {{ page_title }} {% endblock %} {%
+block content %} {% for film in films %}
 <div class="film-card-detail">
     <a href="/film/{{ film.id }}">
         <img

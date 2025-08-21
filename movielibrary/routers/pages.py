@@ -287,13 +287,19 @@ async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db
     result = result.unique()
     films = result.scalars().all()
     films = [FilmRead.model_validate(film) for film in films]
+    page_title = films[0].title
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
     genres_for_template = list(genres)
     return templates.TemplateResponse(
         "film_details.html",
-        {"request": request, "films": films, "genres": genres_for_template},
+        {
+            "request": request,
+            "films": films,
+            "genres": genres_for_template,
+            "page_title": page_title,
+        },
     )
 
 

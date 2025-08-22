@@ -353,6 +353,9 @@ async def create_film(
             status_code=400, detail="Недопустимый тип контента"
         ) from None
 
+    if media_type != "movie":
+        title += " (Сериал)"
+
     new_film = Film(
         title=title,
         year=year,

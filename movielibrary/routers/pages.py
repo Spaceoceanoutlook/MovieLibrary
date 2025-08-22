@@ -16,7 +16,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
@@ -29,8 +29,8 @@ router = APIRouter()
 templates = Jinja2Templates(directory="movielibrary/templates")
 
 COMMON_FILM_OPTIONS = [
-    joinedload(Film.genres).joinedload(FilmGenre.genre),
-    joinedload(Film.countries).joinedload(FilmCountry.country),
+    selectinload(Film.genres).selectinload(FilmGenre.genre),
+    selectinload(Film.countries).selectinload(FilmCountry.country),
 ]
 
 
@@ -43,7 +43,7 @@ COMMON_FILM_OPTIONS = [
 async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7)
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
 
     stmt = select(Genre)
@@ -92,7 +92,7 @@ async def list_series(
         .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
 
     stmt = select(Genre)
     result = await db.execute(stmt)
@@ -149,7 +149,7 @@ async def read_films_by_genre(
         .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
 
     stmt = select(Genre)
@@ -205,7 +205,7 @@ async def read_films_by_country(
         .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
 
     stmt = select(Genre)
@@ -253,7 +253,7 @@ async def read_films_by_year(
         .offset((page - 1) * page_size)
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
 
     stmt = select(Genre)
@@ -284,7 +284,6 @@ async def read_films_by_year(
 async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id)
     result = await db.execute(stmt)
-    result = result.unique()
     films = result.scalars().all()
     films = [FilmRead.model_validate(film) for film in films]
     page_title = films[0].title

@@ -20,6 +20,7 @@ from sqlalchemy.orm import selectinload
 
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
+from movielibrary.models.enums import MediaType
 from movielibrary.schemas.film import FilmRead
 from movielibrary.send_email import send_email_async
 
@@ -339,13 +340,26 @@ async def create_film(
     code: str = Form(...),
     genres: List[int] = Form([]),
     countries: List[int] = Form([]),
+    type: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
     if code != os.getenv("VALID_CODE"):
         raise HTTPException(status_code=400, detail="Неверный код доступа")
 
+    try:
+        media_type = MediaType(type)
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Недопустимый тип контента"
+        ) from None
+
     new_film = Film(
-        title=title, year=year, description=description, rating=rating, photo=photo
+        title=title,
+        year=year,
+        description=description,
+        rating=rating,
+        photo=photo,
+        type=media_type,
     )
 
     try:

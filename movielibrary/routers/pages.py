@@ -284,9 +284,9 @@ async def read_films_by_year(
 async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id)
     result = await db.execute(stmt)
-    films = result.scalars().all()
-    films = [FilmRead.model_validate(film) for film in films]
-    page_title = films[0].title
+    film = result.scalars().first()
+    film = FilmRead.model_validate(film)
+    page_title = film.title
     stmt = select(Genre)
     result = await db.execute(stmt)
     genres = result.scalars().all()
@@ -295,7 +295,7 @@ async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db
         "film_details.html",
         {
             "request": request,
-            "films": films,
+            "film": film,
             "genres": genres_for_template,
             "page_title": page_title,
         },

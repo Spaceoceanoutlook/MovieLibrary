@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
@@ -14,8 +14,8 @@ templates = Jinja2Templates(directory="movielibrary/templates")
 router = APIRouter()
 
 COMMON_FILM_OPTIONS = [
-    joinedload(Film.genres).joinedload(FilmGenre.genre),
-    joinedload(Film.countries).joinedload(FilmCountry.country),
+    selectinload(Film.genres).selectinload(FilmGenre.genre),
+    selectinload(Film.countries).selectinload(FilmCountry.country),
 ]
 
 
@@ -55,7 +55,7 @@ async def read_films_by_genre(genre_name: str, db: AsyncSession = Depends(get_db
         .order_by(desc(Film.rating))
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -77,7 +77,7 @@ async def read_films_by_country(country_name: str, db: AsyncSession = Depends(ge
     )
 
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -97,7 +97,7 @@ async def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
     )
 
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     films_for_response = [FilmRead.model_validate(film) for film in films]
     return films_for_response
 
@@ -116,5 +116,5 @@ async def list_series(db: AsyncSession = Depends(get_db)):
         .order_by(desc(Film.rating))
     )
     result = await db.execute(stmt)
-    films = result.unique().scalars().all()
+    films = result.scalars().all()
     return films

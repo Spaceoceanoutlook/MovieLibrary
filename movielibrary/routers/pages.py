@@ -78,16 +78,14 @@ async def list_series(
     page: int = Query(1, ge=1),
     page_size: int = 7,
 ):
-    total_stmt = (
-        select(func.count()).select_from(Film).filter(Film.title.ilike("%Сериал%"))
-    )
+    total_stmt = select(func.count()).select_from(Film).filter(Film.type == "series")
     total_result = await db.execute(total_stmt)
     total_films = total_result.scalar()
 
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
-        .filter(Film.title.ilike("%Сериал%"))
+        .filter(Film.type == "series")
         .order_by(desc(Film.rating))
         .limit(page_size)
         .offset((page - 1) * page_size)

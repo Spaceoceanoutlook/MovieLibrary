@@ -112,7 +112,7 @@ async def list_series(db: AsyncSession = Depends(get_db)):
     stmt = (
         select(Film)
         .options(*COMMON_FILM_OPTIONS)
-        .filter(Film.title.ilike("%Сериал%"))
+        .filter(Film.type == "series")
         .order_by(desc(Film.rating))
     )
     result = await db.execute(stmt)

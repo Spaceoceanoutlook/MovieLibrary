@@ -3,14 +3,12 @@ services:
     build: .
     container_name: movielibrary_web
     env_file: .env
-    command: uvicorn movielibrary.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn movielibrary.main:app --host 0.0.0.0 --port 8000
 
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
       - db
-    volumes:
-      - .:/app
     restart: always
 
   db:
@@ -24,12 +22,12 @@ services:
       - "5432:5432"
     restart: always
 
-  # bot:
-  #   build:
-  #     context: ./telegrambot
-  #   container_name: movielibrary_bot
-  #   env_file: .env
-  #   restart: always
+  bot:
+    build:
+      context: ./telegrambot
+    container_name: movielibrary_bot
+    env_file: .env
+    restart: always
 
 volumes:
   postgres_data:

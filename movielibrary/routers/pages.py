@@ -47,7 +47,7 @@ async def get_all_genres(db: AsyncSession):
     description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов",
 )
 async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
-    stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(7)
+    stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(5)
     result = await db.execute(stmt)
     films = result.scalars().all()
     films_for_template = [FilmRead.model_validate(film) for film in films]
@@ -77,7 +77,7 @@ async def list_series(
     request: Request,
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
-    page_size: int = 7,
+    page_size: int = 5,
 ):
     total_stmt = select(func.count()).select_from(Film).filter(Film.type == "series")
     total_result = await db.execute(total_stmt)
@@ -122,7 +122,7 @@ async def read_films_by_genre(
     request: Request,
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
-    page_size: int = 7,
+    page_size: int = 5,
 ):
     total_stmt = (
         select(func.count())
@@ -175,7 +175,7 @@ async def read_films_by_country(
     request: Request,
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
-    page_size: int = 7,
+    page_size: int = 5,
 ):
     total_stmt = (
         select(func.count())
@@ -228,7 +228,7 @@ async def read_films_by_year(
     request: Request,
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
-    page_size: int = 7,
+    page_size: int = 5,
 ):
     total_stmt = select(func.count()).select_from(Film).filter(Film.year == year)
     total_result = await db.execute(total_stmt)

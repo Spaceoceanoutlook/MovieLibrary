@@ -1,35 +1,127 @@
-{% extends "base.html" %} {% block title %} {{ page_title }} {% endblock %} {%
-block content %}
-<div class="film-card-detail">
-    <a href="/film/{{ film.id }}">
-        <img
-            src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
-            alt="{{ film.title }}"
-        />
-    </a>
-    <div class="film-content">
-        <h2>{{ film.title }}</h2>
-        <p class="year">
-            Год:
-            <a href="/years/{{ film.year }}">{{ film.year }}</a>
-        </p>
-        <p class="rating">Рейтинг: <b>{{ film.rating }}</b></p>
-        <p>{{ film.description }}</p>
-        {% if film.genres %}
-        <div class="genres">
-            Жанры: {% for genre in film.genres %}
-            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
-            {% endfor %}
-        </div>
-        {% endif %} {% if film.countries %}
-        <div class="countries">
-            Страны: {% for country in film.countries %}
-            <a href="/countries/{{ country.name | urlencode }}/"
-                >{{ country.name }}</a
-            >
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ film.title }} — КиноПоиск</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                background: #f4f4f4;
+            }
+
+            /* Шапка */
+            header {
+                background: #222;
+                color: #fff;
+                padding: 15px 20px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            header h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            /* Карточка фильма */
+            main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .film-card {
+                display: flex;
+                flex-direction: row;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                max-width: 900px;
+                width: 100%;
+            }
+
+            .film-card img {
+                width: 330px;
+                height: 500px;
+                object-fit: cover;
+                flex-shrink: 0;
+            }
+
+            .film-info {
+                padding: 20px;
+                flex: 1;
+            }
+
+            .film-info h2 {
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+            .film-info p {
+                margin: 10px 0;
+                line-height: 1.4em;
+            }
+
+            /* Назад */
+            .back-link {
+                display: inline-block;
+                margin-top: 20px;
+                padding: 10px 20px;
+                background: #f90;
+                color: #fff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background 0.3s ease;
+            }
+
+            .back-link:hover {
+                background: #e67e00;
+            }
+
+            @media (max-width: 700px) {
+                .film-card {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .film-card img {
+                    width: 100%;
+                    height: auto;
+                }
+                .film-info {
+                    padding: 15px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>КиноПоиск</h1>
+        </header>
+
+        <main>
+            <div class="film-card">
+                <img
+                    src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
+                    alt="{{ film.title }}"
+                />
+                <div class="film-info">
+                    <h2>{{ film.title }}</h2>
+                    <p><strong>Страны:</strong> {{ film.countries }}</p>
+                    <p><strong>Жанр:</strong> {{ film.genre }}</p>
+                    <p><strong>Рейтинг:</strong> {{ film.rating }}</p>
+                    <p><strong>Описание:</strong> {{ film.description }}</p>
+                </div>
+            </div>
+
+            <a href="index.html" class="back-link">← Назад</a>
+        </main>
+    </body>
+</html>

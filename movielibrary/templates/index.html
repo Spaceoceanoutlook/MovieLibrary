@@ -1,33 +1,286 @@
-{% extends "base.html" %} {% block title %}spaceocean | Фильмы и Сериалы{%
-endblock %} {%block content %} {% for film in films %}
-<div class="film-card">
-    <a href="/film/{{ film.id }}">
-        <img
-            src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
-            alt="{{ film.title }}"
-        />
-        <div class="film-content">
-            <h2>{{ film.title }}</h2>
-        </div>
-    </a>
-    <div class="film-content">
-        <p class="year">
-            Год:
-            <a href="/years/{{ film.year }}">{{ film.year }}</a>
-        </p>
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>КиноПоиск</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                background: #f4f4f4;
+            }
 
-        <p class="rating">Рейтинг: <b>{{ film.rating }}</b></p>
-    </div>
-</div>
-{% endfor %}
-<div class="paginator">
-    {% if total_pages > 1 %} {% if page > 1 %}
-    <a href="?page={{ page - 1 }}">Назад</a>
-    {% endif %} {% for p in range(1, total_pages + 1) %} {% if p == page %} {{ p
-    }} {% else %}
-    <a href="?page={{ p }}">{{ p }}</a>
-    {% endif %} {% endfor %} {% if page < total_pages %}
-    <a href="?page={{ page + 1 }}">Вперёд</a>
-    {% endif %} {% endif %}
-</div>
-{% endblock %}
+            /* Шапка */
+            header {
+                background: #222;
+                color: #fff;
+                padding: 15px 20px;
+            }
+
+            .header-container {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                max-width: 1325px;
+                margin: 0 auto;
+            }
+
+            header h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            /* Поиск */
+            header form {
+                display: flex;
+                gap: 10px;
+                margin: 5px 0;
+            }
+
+            header input[type="text"] {
+                padding: 5px 10px;
+                border-radius: 3px;
+                border: none;
+                width: 200px;
+            }
+
+            header button {
+                padding: 5px 10px;
+                border: none;
+                border-radius: 3px;
+                background: #f90;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            /* Вход */
+            a.login {
+                padding: 8px 15px;
+                background: linear-gradient(45deg, #ff6a00, #ffb347);
+                color: #fff;
+                font-weight: bold;
+                text-decoration: none;
+                border-radius: 25px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            a.login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            }
+
+            /* Жанры */
+            nav.genres {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px 20px;
+                justify-content: center;
+                background: #fff;
+            }
+
+            nav.genres a {
+                text-decoration: none;
+                padding: 6px 14px;
+                border-radius: 20px;
+                background: #eee;
+                color: #333;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            nav.genres a:hover {
+                background: #f90;
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Фильмы */
+            main {
+                padding: 20px;
+            }
+            .movies {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .movie-card {
+                width: 250px;
+                height: 550px;
+                background: #fff;
+                border-radius: 5px;
+                overflow: hidden;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+                text-decoration: none;
+                color: inherit;
+                display: flex;
+                flex-direction: column;
+                transition:
+                    transform 0.3s,
+                    box-shadow 0.3s;
+            }
+
+            .movie-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            }
+
+            .movie-card img {
+                width: 100%;
+                height: 380px;
+                object-fit: cover;
+            }
+
+            .movie-content {
+                padding: 10px 15px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                flex-grow: 1;
+            }
+
+            .movie-content h3 {
+                margin: 0 0 15px 0;
+                font-size: 16px;
+                line-height: 1.2em;
+                height: 2.4em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Блок информации снизу */
+            .info-header {
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                font-weight: bold;
+                color: #555;
+            }
+
+            .info-values {
+                margin-top: 5px;
+            }
+
+            .year {
+                text-align: left;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .rating {
+                text-align: left;
+                font-weight: bold;
+                color: green;
+            }
+
+            /* Пагинация */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin: 20px 0;
+                font-size: 14px;
+            }
+
+            .pagination a,
+            .pagination span.current {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 4px;
+                background: #eee;
+                text-decoration: none;
+                color: #333;
+                transition: background 0.3s;
+            }
+
+            .pagination a:hover {
+                background: #f90;
+                color: #fff;
+            }
+
+            .pagination span.current {
+                background: #f90;
+                color: #fff;
+                font-weight: bold;
+                cursor: default;
+            }
+
+            @media (max-width: 600px) {
+                .header-container {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                header form {
+                    width: 100%;
+                }
+                header input[type="text"] {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="header-container">
+                <h1>КиноПоиск</h1>
+                <form action="/search" method="get">
+                    <input type="text" name="q" placeholder="Поиск фильма" />
+                    <button type="submit">Найти</button>
+                </form>
+                <a href="/login" class="login">Вход</a>
+            </div>
+        </header>
+
+        <nav class="genres">
+            {% for genre in genres %}
+            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
+            {% endfor %}
+        </nav>
+
+        <main>
+            <div class="movies">
+                {% for film in films %}
+                <a href="film_details.html" class="movie-card">
+                    <img
+                        src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
+                        alt="{{ film.title }}"
+                    />
+                    <div class="movie-content">
+                        <h3>{{ film.title }}</h3>
+                        <div class="">
+                            ГОД
+                            <div class="">{{ film.year }}</div>
+                        </div>
+                        <div class="info-header">
+                            РЕЙТИНГ
+                            <div class="rating">{{ film.rating }}</div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация -->
+            <div class="pagination">
+                {% if total_pages > 1 %} {% if page > 1 %}
+                <a href="?page={{ page - 1 }}">«</a>
+                {% endif %} {% for p in range(1, total_pages + 1) %} {% if p ==
+                page %}
+                <span class="current">{{ p }}</span>
+                {% else %}
+                <a href="?page={{ p }}">{{ p }}</a>
+                {% endif %} {% endfor %} {% if page < total_pages %}
+                <a href="?page={{ page + 1 }}">»</a>
+                {% endif %} {% endif %}
+            </div>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}Spaceocean Фильмы и Сериалы{% endblock %}
+        </title>
+        <link rel="stylesheet" href="/static/css/styles.css" />
+    </head>
+    <body>
+        <header>
+            <div class="header-container">
+                <a href="/" class="logo">spaceocean</a>
+                <form action="/search" method="get">
+                    <input type="text" name="q" placeholder="Поиск фильма" />
+                    <button type="submit">Найти</button>
+                </form>
+                <a href="/login" class="login">Вход</a>
+            </div>
+        </header>
+
+        <nav class="genres">
+            {% for genre in genres %}
+            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
+            {% endfor %}
+            <a href="/series/">Сериалы</a>
+        </nav>
+
+        <main>{% block content %}{% endblock %}</main>
+    </body>
+</html>

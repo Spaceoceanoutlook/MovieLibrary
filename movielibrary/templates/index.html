@@ -1,286 +1,36 @@
-<!doctype html>
-<html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Spaceocean Фильмы и Сериалы</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                background: #f4f4f4;
-            }
-            a {
-                color: #222;
-                font-size: 15px;
-                text-decoration: none;
-            }
-
-            header {
-                background: #222;
-                color: #fff;
-                padding: 15px 20px;
-            }
-
-            .header-container {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: space-between;
-                gap: 10px;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
-
-            header h1 {
-                margin: 0;
-                font-size: 24px;
-            }
-
-            header form {
-                display: flex;
-                gap: 10px;
-                margin: 5px 0;
-            }
-
-            header input[type="text"] {
-                padding: 5px 10px;
-                border-radius: 3px;
-                border: none;
-                width: 200px;
-            }
-
-            header button {
-                padding: 5px 10px;
-                border: none;
-                border-radius: 3px;
-                background: #f90;
-                color: #fff;
-                cursor: pointer;
-            }
-
-            a.login {
-                padding: 8px 15px;
-                background: linear-gradient(45deg, #ff6a00, #ffb347);
-                color: #fff;
-                font-weight: bold;
-                text-decoration: none;
-                border-radius: 25px;
-                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-                transition: all 0.3s ease;
-            }
-
-            a.login:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-            }
-
-            nav.genres {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 15px;
-                padding: 10px 20px;
-                justify-content: center;
-                background: #fff;
-            }
-
-            nav.genres a {
-                text-decoration: none;
-                padding: 10px 20px;
-                border-radius: 20px;
-                background: #eee;
-                color: #333;
-                font-weight: bold;
-                transition: all 0.3s ease;
-            }
-
-            nav.genres a:hover {
-                background: #f90;
-                color: #fff;
-                transform: translateY(-2px);
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            }
-
-            main {
-                padding: 40px;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
-
-            .movies-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 20px;
-            }
-
-            .movie-card {
-                background: #fff;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-                transition: transform 0.2s;
-            }
-
-            .movie-card:hover {
-                transform: translateY(-5px);
-            }
-
-            .movie-card img {
-                width: 100%;
-                height: 400px;
-                object-fit: cover;
-                display: block;
-            }
-
-            .movie-info {
-                padding: 10px;
-                text-align: center;
-            }
-
-            .movie-info h3 {
-                margin: 0 0 5px;
-                font-size: 16px;
-                min-height: 40px;
-                line-height: 20px;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-            }
-
-            .movie-info p {
-                margin: 2px 0;
-                font-size: 14px;
-                color: #666;
-            }
-            .movie-info .year-link {
-                display: inline-block;
-                padding: 4px 10px;
-                border-radius: 12px;
-                background: #eee;
-                color: #333;
-                font-weight: bold;
-                text-decoration: none;
-                transition: all 0.3s ease;
-            }
-
-            .movie-info .year-link:hover {
-                background: #f90;
-                color: #fff;
-            }
-
-            .movie-info .rating {
-                font-weight: bold;
-                color: #28a745;
-                margin-top: 5px;
-            }
-            .pagination {
-                display: flex;
-                justify-content: center;
-                gap: 8px;
-                margin: 20px 0;
-                font-size: 14px;
-            }
-
-            .pagination a,
-            .pagination span.current {
-                display: inline-block;
-                padding: 6px 12px;
-                border-radius: 4px;
-                background: #eee;
-                text-decoration: none;
-                color: #333;
-                transition: background 0.3s;
-            }
-
-            .pagination a:hover {
-                background: #f90;
-                color: #fff;
-            }
-
-            .pagination span.current {
-                background: #f90;
-                color: #fff;
-                font-weight: bold;
-                cursor: default;
-            }
-
-            @media (max-width: 600px) {
-                .header-container {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-                header form {
-                    width: 100%;
-                }
-                header input[type="text"] {
-                    width: 100%;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <div class="header-container">
-                <a
-                    href="/"
-                    style="
-                        font-size: 30px;
-                        font-weight: bold;
-                        margin-right: 50px;
-                        color: white;
-                    "
-                    >spaceocean</a
-                >
-                <form action="/search" method="get">
-                    <input type="text" name="q" placeholder="Поиск фильма" />
-                    <button type="submit">Найти</button>
-                </form>
-                <a href="/login" class="login">Вход</a>
+{% extends "base.html" %} {% block title %}Spaceocean - Фильмы и Сериалы{%
+endblock %} {% block content %}
+<div class="movies-grid">
+    {% for film in films %}
+    <div class="movie-card">
+        <a href="/film/{{ film.id }}">
+            <img
+                src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
+                alt="{{ film.title }}"
+            />
+            <div class="movie-info">
+                <h3>{{ film.title }}</h3>
+                <p>
+                    <a href="/years/{{ film.year }}" class="year-link"
+                        >{{ film.year }}</a
+                    >
+                </p>
+                <p class="rating">⭐ {{ film.rating }}</p>
             </div>
-        </header>
+        </a>
+    </div>
+    {% endfor %}
+</div>
 
-        <nav class="genres">
-            {% for genre in genres %}
-            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
-            {% endfor %}
-            <a href="/series/">Сериалы</a>
-        </nav>
-
-        <main>
-            <div class="movies-grid">
-                {% for film in films %}
-                <div class="movie-card">
-                    <a href="/film/{{ film.id }}">
-                    <img
-                        src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
-                        alt="{{ film.title }}"
-                    />
-                    <div class="movie-info">
-                        <h3>{{ film.title }}</h3><a/>
-                        <p>
-                            <a href="/years/{{ film.year }}" class="year-link"
-                                >{{ film.year }}</a
-                            >
-                        </p>
-                        <p class="rating">⭐ {{ film.rating }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div class="pagination">
-                {% if total_pages > 1 %} {% if page > 1 %}
-                <a href="?page={{ page - 1 }}">«</a>
-                {% endif %} {% for p in range(1, total_pages + 1) %} {% if p ==
-                page %}
-                <span class="current">{{ p }}</span>
-                {% else %}
-                <a href="?page={{ p }}">{{ p }}</a>
-                {% endif %} {% endfor %} {% if page < total_pages %}
-                <a href="?page={{ page + 1 }}">»</a>
-                {% endif %} {% endif %}
-            </div>
-        </main>
-    </body>
-</html>
+<div class="pagination">
+    {% if total_pages > 1 %} {% if page > 1 %}
+    <a href="?page={{ page - 1 }}">«</a>
+    {% endif %} {% for p in range(1, total_pages + 1) %} {% if p == page %}
+    <span class="current">{{ p }}</span>
+    {% else %}
+    <a href="?page={{ p }}">{{ p }}</a>
+    {% endif %} {% endfor %} {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}">»</a>
+    {% endif %} {% endif %}
+</div>
+{% endblock %}

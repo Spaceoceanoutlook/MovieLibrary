@@ -10,6 +10,11 @@
                 margin: 0;
                 background: #f4f4f4;
             }
+            a {
+                color: #222;
+                font-size: 15px;
+                text-decoration: none;
+            }
 
             header {
                 background: #222;
@@ -217,7 +222,16 @@
     <body>
         <header>
             <div class="header-container">
-                <h1>spaceocean</h1>
+                <a
+                    href="/"
+                    style="
+                        font-size: 30px;
+                        font-weight: bold;
+                        margin-right: 50px;
+                        color: white;
+                    "
+                    >spaceocean</a
+                >
                 <form action="/search" method="get">
                     <input type="text" name="q" placeholder="Поиск фильма" />
                     <button type="submit">Найти</button>
@@ -237,12 +251,13 @@
             <div class="movies-grid">
                 {% for film in films %}
                 <div class="movie-card">
+                    <a href="/film/{{ film.id }}">
                     <img
                         src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
                         alt="{{ film.title }}"
                     />
                     <div class="movie-info">
-                        <h3>{{ film.title }}</h3>
+                        <h3>{{ film.title }}</h3><a/>
                         <p>
                             <a href="/years/{{ film.year }}" class="year-link"
                                 >{{ film.year }}</a

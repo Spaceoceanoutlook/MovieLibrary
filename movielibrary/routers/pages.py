@@ -112,6 +112,57 @@ async def list_series(
 
 
 @router.get(
+    "/search",
+    summary="Search Films by Title",
+    description="Позволяет искать фильмы по названию (частичное совпадение)",
+)
+async def search_films(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    q: str | None = Query(None, description="Название фильма"),
+    page: int = Query(1, ge=1),
+    page_size: int = 5,
+):
+    if len(q) < 3:
+        films_for_template = []
+        total_pages = 0
+    else:
+        total_stmt = (
+            select(func.count(Film.id.distinct()))
+            .select_from(Film)
+            .join(Film.genres)
+            .join(FilmGenre.genre)
+            .filter(Film.title.ilike(f"%{q}%"))
+        )
+        total_result = await db.execute(total_stmt)
+        total_films = total_result.scalar()
+
+        stmt = (
+            select(Film)
+            .options(*COMMON_FILM_OPTIONS)
+            .filter(Film.title.ilike(f"%{q}%"))
+            .order_by(desc(Film.rating))
+            .limit(page_size)
+            .offset((page - 1) * page_size)
+        )
+        result = await db.execute(stmt)
+        films = result.scalars().all()
+        films_for_template = [FilmRead.model_validate(film) for film in films]
+        total_pages = (total_films + page_size - 1) // page_size
+    genres_for_template = await get_all_genres(db)
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "films": films_for_template,
+            "genres": genres_for_template,
+            "page": page,
+            "total_pages": total_pages,
+        },
+    )
+
+
+@router.get(
     "/genres/{genre_name}",
     response_class=HTMLResponse,
     summary="Read Films By Genre",
@@ -125,7 +176,7 @@ async def read_films_by_genre(
     page_size: int = 5,
 ):
     total_stmt = (
-        select(func.count())
+        select(func.count(Film.id.distinct()))
         .select_from(Film)
         .join(Film.genres)
         .join(FilmGenre.genre)
@@ -178,7 +229,7 @@ async def read_films_by_country(
     page_size: int = 5,
 ):
     total_stmt = (
-        select(func.count())
+        select(func.count(Film.id.distinct()))
         .select_from(Film)
         .join(Film.countries)
         .join(FilmCountry.country)

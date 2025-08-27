@@ -3,24 +3,33 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{{ film.title }} — КиноПоиск</title>
+        <title>Spaceocean Фильмы и Сериалы</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
                 margin: 0;
                 background: #f4f4f4;
             }
+            a {
+                color: #222;
+                font-size: 15px;
+                text-decoration: none;
+            }
 
-            /* Шапка */
             header {
                 background: #222;
                 color: #fff;
                 padding: 15px 20px;
+            }
+
+            .header-container {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: center;
                 justify-content: space-between;
                 gap: 10px;
+                max-width: 1400px;
+                margin: 0 auto;
             }
 
             header h1 {
@@ -28,14 +37,76 @@
                 font-size: 24px;
             }
 
-            /* Карточка фильма */
+            header form {
+                display: flex;
+                gap: 10px;
+                margin: 5px 0;
+            }
+
+            header input[type="text"] {
+                padding: 5px 10px;
+                border-radius: 3px;
+                border: none;
+                width: 200px;
+            }
+
+            header button {
+                padding: 5px 10px;
+                border: none;
+                border-radius: 3px;
+                background: #f90;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            a.login {
+                padding: 8px 15px;
+                background: linear-gradient(45deg, #ff6a00, #ffb347);
+                color: #fff;
+                font-weight: bold;
+                text-decoration: none;
+                border-radius: 25px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            a.login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            }
+
+            nav.genres {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                padding: 10px 20px;
+                justify-content: center;
+                background: #fff;
+            }
+
+            nav.genres a {
+                text-decoration: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+                background: #eee;
+                color: #333;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            nav.genres a:hover {
+                background: #f90;
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
             main {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 20px;
+                padding: 40px;
             }
-
             .film-card {
                 display: flex;
                 flex-direction: row;
@@ -68,22 +139,49 @@
                 margin: 10px 0;
                 line-height: 1.4em;
             }
-
-            /* Назад */
-            .back-link {
+            .countries,
+            .genres {
+                margin: 2px 0;
+                font-size: 14px;
+                color: #666;
+            }
+            .countries a,
+            .genres a {
                 display: inline-block;
-                margin-top: 20px;
-                padding: 10px 20px;
+                padding: 4px 10px;
+                border-radius: 12px;
+                background: #eee;
+                color: #333;
+                font-weight: bold;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+            .countries a:hover,
+            .genres a:hover {
                 background: #f90;
                 color: #fff;
-                text-decoration: none;
-                border-radius: 5px;
+            }
+            .rating {
                 font-weight: bold;
-                transition: background 0.3s ease;
+                color: #28a745;
+                margin-top: 5px;
             }
 
-            .back-link:hover {
-                background: #e67e00;
+            .back-btn {
+                display: inline-block;
+                margin-bottom: 20px;
+                padding: 8px 16px;
+                border-radius: 4px;
+                background: #eee;
+                color: #333;
+                font-weight: bold;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+            .back-btn:hover {
+                background: #f90;
+                color: #fff;
             }
 
             @media (max-width: 700px) {
@@ -103,17 +201,31 @@
     </head>
     <body>
         <header>
-            <a
-                href="/"
-                style="
-                    font-size: 30px;
-                    font-weight: bold;
-                    margin-right: 50px;
-                    color: white;
-                "
-                >spaceocean</a
-            >
+            <div class="header-container">
+                <a
+                    href="/"
+                    style="
+                        font-size: 30px;
+                        font-weight: bold;
+                        margin-right: 50px;
+                        color: white;
+                    "
+                    >spaceocean</a
+                >
+                <form action="/search" method="get">
+                    <input type="text" name="q" placeholder="Поиск фильма" />
+                    <button type="submit">Найти</button>
+                </form>
+                <a href="/login" class="login">Вход</a>
+            </div>
         </header>
+
+        <nav class="genres">
+            {% for genre in genres %}
+            <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
+            {% endfor %}
+            <a href="/series/">Сериалы</a>
+        </nav>
 
         <main>
             <div class="film-card">
@@ -123,14 +235,29 @@
                 />
                 <div class="film-info">
                     <h2>{{ film.title }}</h2>
-                    <p><strong>Страны:</strong> {{ film.countries }}</p>
-                    <p><strong>Жанр:</strong> {{ film.genre }}</p>
-                    <p><strong>Рейтинг:</strong> {{ film.rating }}</p>
+                    {% if film.countries %}
+                    <div class="countries">
+                        <b>Страны:</b> {% for country in film.countries %}
+                        <a href="/countries/{{ country.name | urlencode }}/"
+                            >{{ country.name }}</a
+                        >
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="genres">
+                        <b>Жанр:</b> {% for genre in film.genres %}
+                        <a href="/genres/{{ genre.name | urlencode }}/"
+                            >{{ genre.name }}</a
+                        >
+                        {% endfor %}
+                    </div>
+                    <p class="rating">⭐ {{ film.rating }}</p>
                     <p><strong>Описание:</strong> {{ film.description }}</p>
                 </div>
             </div>
-
-            <a href="index.html" class="back-link">← Назад</a>
+            <div style="text-align: center; margin-top: 25px">
+                <a href="javascript:history.back()" class="back-btn">Назад</a>
+            </div>
         </main>
     </body>
 </html>

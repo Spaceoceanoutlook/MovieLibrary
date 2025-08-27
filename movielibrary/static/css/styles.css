@@ -244,6 +244,7 @@ main {
 }
 
 .countries,
+.years,
 .genres {
     margin: 2px 0;
     font-size: 14px;
@@ -251,6 +252,7 @@ main {
 }
 
 .countries a,
+.years a,
 .genres a {
     display: inline-block;
     padding: 4px 10px;
@@ -264,6 +266,7 @@ main {
 }
 
 .countries a:hover,
+.years a:hover,
 .genres a:hover {
     background: #f90;
     color: #fff;

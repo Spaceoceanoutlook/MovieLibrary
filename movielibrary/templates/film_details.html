@@ -8,7 +8,10 @@ endblock %} {% block content %}
         />
         <div class="film-info">
             <h2>{{ film.title }}</h2>
-
+            <div class="years">
+                <b>Год:</b>
+                <a href="/years/{{ film.year }}">{{ film.year }}</a>
+            </div>
             {% if film.countries %}
             <div class="countries">
                 <b>Страны:</b>

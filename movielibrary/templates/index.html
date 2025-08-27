@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>spaceocean</title>
+        <title>Spaceocean Фильмы и Сериалы</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -23,7 +23,7 @@
                 align-items: center;
                 justify-content: space-between;
                 gap: 10px;
-                max-width: 1325px;
+                max-width: 1400px;
                 margin: 0 auto;
             }
 
@@ -81,7 +81,7 @@
 
             nav.genres a {
                 text-decoration: none;
-                padding: 6px 14px;
+                padding: 10px 20px;
                 border-radius: 20px;
                 background: #eee;
                 color: #333;
@@ -97,8 +97,8 @@
             }
 
             main {
-                padding: 20px;
-                max-width: 1325px;
+                padding: 40px;
+                max-width: 1400px;
                 margin: 0 auto;
             }
 
@@ -122,7 +122,7 @@
 
             .movie-card img {
                 width: 100%;
-                height: 380px;
+                height: 400px;
                 object-fit: cover;
                 display: block;
             }
@@ -135,6 +135,12 @@
             .movie-info h3 {
                 margin: 0 0 5px;
                 font-size: 16px;
+                min-height: 40px;
+                line-height: 20px;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
             }
 
             .movie-info p {
@@ -142,7 +148,27 @@
                 font-size: 14px;
                 color: #666;
             }
+            .movie-info .year-link {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 12px;
+                background: #eee;
+                color: #333;
+                font-weight: bold;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
 
+            .movie-info .year-link:hover {
+                background: #f90;
+                color: #fff;
+            }
+
+            .movie-info .rating {
+                font-weight: bold;
+                color: #28a745;
+                margin-top: 5px;
+            }
             .pagination {
                 display: flex;
                 justify-content: center;
@@ -191,7 +217,7 @@
     <body>
         <header>
             <div class="header-container">
-                <h1>КиноПоиск</h1>
+                <h1>spaceocean</h1>
                 <form action="/search" method="get">
                     <input type="text" name="q" placeholder="Поиск фильма" />
                     <button type="submit">Найти</button>
@@ -204,6 +230,7 @@
             {% for genre in genres %}
             <a href="/genres/{{ genre.name | urlencode }}/">{{ genre.name }}</a>
             {% endfor %}
+            <a href="/series/">Сериалы</a>
         </nav>
 
         <main>
@@ -217,9 +244,11 @@
                     <div class="movie-info">
                         <h3>{{ film.title }}</h3>
                         <p>
-                            <a href="/years/{{ film.year }}">{{ film.year }}</a>
+                            <a href="/years/{{ film.year }}" class="year-link"
+                                >{{ film.year }}</a
+                            >
                         </p>
-                        <p>{{ film.rating }}</p>
+                        <p class="rating">⭐ {{ film.rating }}</p>
                     </div>
                 </div>
                 {% endfor %}

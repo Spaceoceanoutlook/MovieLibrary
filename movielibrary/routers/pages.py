@@ -113,8 +113,9 @@ async def list_series(
 
 @router.get(
     "/search",
+    response_class=HTMLResponse,
     summary="Search Films by Title",
-    description="Позволяет искать фильмы по названию (частичное совпадение)",
+    description="Возвращает HTML-страницу с фильмами, отфильтрованными по названию (частичное совпадение)",
 )
 async def search_films(
     request: Request,

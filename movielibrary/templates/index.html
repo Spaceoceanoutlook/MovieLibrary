@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>КиноПоиск</title>
+        <title>spaceocean</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -11,7 +11,6 @@
                 background: #f4f4f4;
             }
 
-            /* Шапка */
             header {
                 background: #222;
                 color: #fff;
@@ -33,7 +32,6 @@
                 font-size: 24px;
             }
 
-            /* Поиск */
             header form {
                 display: flex;
                 gap: 10px;
@@ -56,7 +54,6 @@
                 cursor: pointer;
             }
 
-            /* Вход */
             a.login {
                 padding: 8px 15px;
                 background: linear-gradient(45deg, #ff6a00, #ffb347);
@@ -73,7 +70,6 @@
                 box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
             }
 
-            /* Жанры */
             nav.genres {
                 display: flex;
                 flex-wrap: wrap;
@@ -100,88 +96,53 @@
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             }
 
-            /* Фильмы */
             main {
                 padding: 20px;
+                max-width: 1325px;
+                margin: 0 auto;
             }
-            .movies {
-                display: flex;
-                flex-wrap: wrap;
+
+            .movies-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
                 gap: 20px;
-                justify-content: center;
-                padding: 20px;
             }
 
             .movie-card {
-                width: 250px;
-                height: 550px;
                 background: #fff;
-                border-radius: 5px;
+                border-radius: 8px;
                 overflow: hidden;
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-                text-decoration: none;
-                color: inherit;
-                display: flex;
-                flex-direction: column;
-                transition:
-                    transform 0.3s,
-                    box-shadow 0.3s;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s;
             }
 
             .movie-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+                transform: translateY(-5px);
             }
 
             .movie-card img {
                 width: 100%;
                 height: 380px;
                 object-fit: cover;
+                display: block;
             }
 
-            .movie-content {
-                padding: 10px 15px;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                flex-grow: 1;
+            .movie-info {
+                padding: 10px;
+                text-align: center;
             }
 
-            .movie-content h3 {
-                margin: 0 0 15px 0;
+            .movie-info h3 {
+                margin: 0 0 5px;
                 font-size: 16px;
-                line-height: 1.2em;
-                height: 2.4em;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
 
-            /* Блок информации снизу */
-            .info-header {
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-                font-weight: bold;
-                color: #555;
+            .movie-info p {
+                margin: 2px 0;
+                font-size: 14px;
+                color: #666;
             }
 
-            .info-values {
-                margin-top: 5px;
-            }
-
-            .year {
-                text-align: left;
-                font-weight: bold;
-                margin-bottom: 20px;
-            }
-
-            .rating {
-                text-align: left;
-                font-weight: bold;
-                color: green;
-            }
-
-            /* Пагинация */
             .pagination {
                 display: flex;
                 justify-content: center;
@@ -246,29 +207,24 @@
         </nav>
 
         <main>
-            <div class="movies">
+            <div class="movies-grid">
                 {% for film in films %}
-                <a href="film_details.html" class="movie-card">
+                <div class="movie-card">
                     <img
                         src="https://cdn.jsdelivr.net/gh/spaceoceanoutlook/static-assets@master/images/films/{{ film.photo }}"
                         alt="{{ film.title }}"
                     />
-                    <div class="movie-content">
+                    <div class="movie-info">
                         <h3>{{ film.title }}</h3>
-                        <div class="">
-                            ГОД
-                            <div class="">{{ film.year }}</div>
-                        </div>
-                        <div class="info-header">
-                            РЕЙТИНГ
-                            <div class="rating">{{ film.rating }}</div>
-                        </div>
+                        <p>
+                            <a href="/years/{{ film.year }}">{{ film.year }}</a>
+                        </p>
+                        <p>{{ film.rating }}</p>
                     </div>
-                </a>
+                </div>
                 {% endfor %}
             </div>
 
-            <!-- Пагинация -->
             <div class="pagination">
                 {% if total_pages > 1 %} {% if page > 1 %}
                 <a href="?page={{ page - 1 }}">«</a>

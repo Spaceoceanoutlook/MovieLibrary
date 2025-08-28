@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Вход - КиноПоиск</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    Open Sans,
+                    sans-serif;
+                background: #f4f4f4;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .login-container {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px;
+                border: 1px solid #e9ecef;
+            }
+
+            .login-header {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .login-header h2 {
+                color: #333;
+                margin-bottom: 5px;
+                font-size: 24px;
+            }
+
+            .login-header p {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #555;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e9ecef;
+                border-radius: 5px;
+                font-size: 16px;
+                transition: border-color 0.3s;
+                background: #f8f9fa;
+            }
+
+            .form-group input:focus {
+                border-color: #f90;
+                outline: none;
+                background: white;
+            }
+
+            .login-btn {
+                width: 100%;
+                padding: 12px;
+                background: linear-gradient(45deg, #ff6a00, #ffb347);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+            }
+
+            .login-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+            }
+
+            .forgot-password {
+                text-align: center;
+                margin-top: 15px;
+            }
+
+            .forgot-password a {
+                color: #ff6a00;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .forgot-password a:hover {
+                text-decoration: underline;
+            }
+
+            .register-link {
+                text-align: center;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid #e9ecef;
+                color: #666;
+                font-size: 14px;
+            }
+
+            .register-link a {
+                color: #ff6a00;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .register-link a:hover {
+                text-decoration: underline;
+            }
+
+            .back-to-main {
+                display: block;
+                text-align: center;
+                margin-top: 20px;
+                color: #666;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .back-to-main:hover {
+                color: #333;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Вход в Spaceocean</h2>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="login-btn">Войти</button>
+
+                <div class="forgot-password">
+                    <a href="#">Забыли пароль?</a>
+                </div>
+            </form>
+
+            <div class="register-link">
+                Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+            </div>
+
+            <a href="/" class="back-to-main">Вернуться на главную</a>
+        </div>
+    </body>
+</html>

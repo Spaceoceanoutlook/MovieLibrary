@@ -44,7 +44,7 @@ async def get_all_genres(db: AsyncSession):
     "/",
     response_class=HTMLResponse,
     summary="Read Films",
-    description="Главная страница с HTML-шаблоном. Показывает список жанров и семь последних фильмов",
+    description="Главная страница с HTML-шаблоном. Показывает список жанров и пять последних фильмов",
 )
 async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(5)
@@ -107,6 +107,36 @@ async def list_series(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+        },
+    )
+
+
+@router.get(
+    "/login",
+    response_class=HTMLResponse,
+    summary="Login",
+    description="HTML-шаблоном с формой для входа на сайт.",
+)
+async def login(request: Request, db: AsyncSession = Depends(get_db)):
+    return templates.TemplateResponse(
+        "login.html",
+        {
+            "request": request,
+        },
+    )
+
+
+@router.get(
+    "/register",
+    response_class=HTMLResponse,
+    summary="Register",
+    description="HTML-шаблоном с формой для регистрации на сайте.",
+)
+async def register(request: Request, db: AsyncSession = Depends(get_db)):
+    return templates.TemplateResponse(
+        "register.html",
+        {
+            "request": request,
         },
     )
 

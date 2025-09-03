@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from typing import List
 
 from dotenv import load_dotenv
@@ -19,7 +20,11 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from movielibrary.auth_utils import get_password_hash, get_user_by_email
+from movielibrary.auth_utils import (
+    get_password_hash,
+    get_user_by_email,
+    verify_password,
+)
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre, User
 from movielibrary.models.enums import MediaType
@@ -72,6 +77,95 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
 
 
 @router.get(
+    "/register",
+    response_class=HTMLResponse,
+    summary="Register Form",
+    description="HTML-шаблон с формой для регистрации на сайте",
+)
+async def register_form(request: Request, db: AsyncSession = Depends(get_db)):
+    return templates.TemplateResponse(
+        "register.html",
+        {
+            "request": request,
+        },
+    )
+
+
+@router.post(
+    "/register",
+    response_class=HTMLResponse,
+    summary="Register",
+    description="Обрабатывает отправку формы регистрации, сохраняет пользователя в базе и выполняет редирект на главную страницу",
+)
+async def register(
+    email: str = Form(...),
+    password: str = Form(..., min_length=6),
+    confirm_password: str = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    if password != confirm_password:
+        raise HTTPException(status_code=400, detail="Пароли не совпадают")
+
+    try:
+        user = UserCreate(email=email, password=password)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors()) from None
+
+    existing_user = await get_user_by_email(db, user.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Пользователь уже существует")
+
+    hashed_password = get_password_hash(user.password)
+    new_user = User(email=user.email, password_hash=hashed_password)
+    try:
+        db.add(new_user)
+        await db.commit()
+        await db.refresh(new_user)
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail="Ошибка при создании пользователя"
+        ) from None
+    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
+
+@router.get(
+    "/login",
+    response_class=HTMLResponse,
+    summary="Login Form",
+    description="HTML-шаблон с формой для входа на сайт",
+)
+async def login_form(request: Request, db: AsyncSession = Depends(get_db)):
+    return templates.TemplateResponse(
+        "login.html",
+        {
+            "request": request,
+        },
+    )
+
+
+@router.post(
+    "/login",
+    response_class=HTMLResponse,
+    summary="Login",
+    description="Обрабатывает отправку формы входа, выполняет редирект на главную страницу",
+)
+async def login(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await get_user_by_email(db, email)
+    if not user:
+        raise HTTPException(status_code=400, detail="Пользователя не существует")
+    if not verify_password(password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Неправильный пароль")
+    user.last_login = datetime.utcnow()
+    await db.commit()
+    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
+
+@router.get(
     "/series/",
     summary="List Films with pagination",
     description="Возвращает список всех сериалов с жанрами и странами",
@@ -112,74 +206,6 @@ async def list_series(
             "total_pages": total_pages,
         },
     )
-
-
-@router.get(
-    "/login",
-    response_class=HTMLResponse,
-    summary="Login",
-    description="HTML-шаблоном с формой для входа на сайт.",
-)
-async def login(request: Request, db: AsyncSession = Depends(get_db)):
-    return templates.TemplateResponse(
-        "login.html",
-        {
-            "request": request,
-        },
-    )
-
-
-@router.get(
-    "/register",
-    response_class=HTMLResponse,
-    summary="Register Form",
-    description="HTML-шаблоном с формой для регистрации на сайте.",
-)
-async def register_form(request: Request, db: AsyncSession = Depends(get_db)):
-    return templates.TemplateResponse(
-        "register.html",
-        {
-            "request": request,
-        },
-    )
-
-
-@router.post(
-    "/register",
-    response_class=HTMLResponse,
-    summary="Create Register",
-    description="Обрабатывает отправку формы регистрации, сохраняет пользователя в базе и выполняет редирект на главную страницу",
-)
-async def create_register(
-    email: str = Form(...),
-    password: str = Form(..., min_length=6),
-    confirm_password: str = Form(...),
-    db: AsyncSession = Depends(get_db),
-):
-    if password != confirm_password:
-        raise HTTPException(status_code=400, detail="Пароли не совпадают")
-
-    try:
-        user = UserCreate(email=email, password=password)
-    except ValidationError as e:
-        raise HTTPException(status_code=422, detail=e.errors()) from None
-
-    existing_user = await get_user_by_email(db, user.email)
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Пользователь уже существует")
-
-    hashed_password = get_password_hash(user.password)
-    new_user = User(email=user.email, password_hash=hashed_password)
-    try:
-        db.add(new_user)
-        await db.commit()
-        await db.refresh(new_user)
-    except Exception:
-        await db.rollback()
-        raise HTTPException(
-            status_code=500, detail="Ошибка при создании пользователя"
-        ) from None
-    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get(

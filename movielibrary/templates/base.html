@@ -16,6 +16,11 @@
                     <input type="text" name="q" placeholder="Поиск фильма" />
                     <button type="submit">Найти</button>
                 </form>
+                {% if user_email %}
+                <div>Привет, {{ user_email }}</div>
+                {% else %}
+                <div>Привет, незнакомец</div>
+                {% endif %}
                 <a href="/login" class="login">Вход</a>
             </div>
         </header>

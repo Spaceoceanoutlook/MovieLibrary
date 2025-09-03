@@ -64,6 +64,8 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     page = 1
     total_pages = 1
 
+    user_email = request.session.get("user_email")
+
     return templates.TemplateResponse(
         "index.html",
         {
@@ -72,6 +74,7 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": user_email,
         },
     )
 
@@ -151,6 +154,7 @@ async def login_form(request: Request, db: AsyncSession = Depends(get_db)):
     description="Обрабатывает отправку формы входа, выполняет редирект на главную страницу",
 )
 async def login(
+    request: Request,
     email: str = Form(...),
     password: str = Form(...),
     db: AsyncSession = Depends(get_db),
@@ -162,6 +166,7 @@ async def login(
         raise HTTPException(status_code=400, detail="Неправильный пароль")
     user.last_login = datetime.utcnow()
     await db.commit()
+    request.session["user_email"] = user.email
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 

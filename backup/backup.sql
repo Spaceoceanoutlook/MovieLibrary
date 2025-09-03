@@ -1404,5 +1404,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Fcx8rWBTaka5EryrnwaxgwUwnfJi5aMBDQiJCHAZCkMdyLWsjadb9rjGlMrVKsP
+
 

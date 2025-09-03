@@ -150,7 +150,7 @@
             <div class="register-header">
                 <h2>Регистрация в КиноПоиск</h2>
             </div>
-            <form>
+            <form method="POST" action="/register">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required />
@@ -165,11 +165,11 @@
                     />
                 </div>
                 <div class="form-group">
-                    <label for="confirm-password">Подтвердите пароль</label>
+                    <label for="confirm_password">Подтвердите пароль</label>
                     <input
                         type="password"
-                        id="confirm-password"
-                        name="confirm-password"
+                        id="confirm_password"
+                        name="confirm_password"
                         required
                     />
                 </div>

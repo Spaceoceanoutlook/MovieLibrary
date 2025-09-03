@@ -14,14 +14,17 @@ from fastapi import (
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import ValidationError
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from movielibrary.auth_utils import get_password_hash, get_user_by_email
 from movielibrary.database import get_db
-from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre
+from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre, User
 from movielibrary.models.enums import MediaType
 from movielibrary.schemas.film import FilmRead
+from movielibrary.schemas.user import UserCreate
 from movielibrary.send_email import send_email_async
 
 load_dotenv()
@@ -129,16 +132,54 @@ async def login(request: Request, db: AsyncSession = Depends(get_db)):
 @router.get(
     "/register",
     response_class=HTMLResponse,
-    summary="Register",
+    summary="Register Form",
     description="HTML-шаблоном с формой для регистрации на сайте.",
 )
-async def register(request: Request, db: AsyncSession = Depends(get_db)):
+async def register_form(request: Request, db: AsyncSession = Depends(get_db)):
     return templates.TemplateResponse(
         "register.html",
         {
             "request": request,
         },
     )
+
+
+@router.post(
+    "/register",
+    response_class=HTMLResponse,
+    summary="Create Register",
+    description="Обрабатывает отправку формы регистрации, сохраняет пользователя в базе и выполняет редирект на главную страницу",
+)
+async def create_register(
+    email: str = Form(...),
+    password: str = Form(..., min_length=6),
+    confirm_password: str = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    if password != confirm_password:
+        raise HTTPException(status_code=400, detail="Пароли не совпадают")
+
+    try:
+        user = UserCreate(email=email, password=password)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors()) from None
+
+    existing_user = await get_user_by_email(db, user.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Пользователь уже существует")
+
+    hashed_password = get_password_hash(user.password)
+    new_user = User(email=user.email, password_hash=hashed_password)
+    try:
+        db.add(new_user)
+        await db.commit()
+        await db.refresh(new_user)
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail="Ошибка при создании пользователя"
+        ) from None
+    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get(
@@ -391,7 +432,6 @@ async def show_create_film_form(request: Request, db: AsyncSession = Depends(get
 
 @router.post(
     "/create",
-    status_code=status.HTTP_302_FOUND,
     summary="Create Film",
     description="Обрабатывает отправку формы создания фильма, сохраняет фильм в базе и выполняет редирект на главную страницу",
 )

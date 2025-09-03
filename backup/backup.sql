@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict Y3veoydBXTkNTWVcpkaPGwoTqT7GMjOaj54YF4rgVkWGeG9g3vQJg6p7lBoidVy
+\restrict Fcx8rWBTaka5EryrnwaxgwUwnfJi5aMBDQiJCHAZCkMdyLWsjadb9rjGlMrVKsP
 
--- Dumped from database version 16.10 (Debian 16.10-1.pgdg13+1)
--- Dumped by pg_dump version 16.10 (Debian 16.10-1.pgdg13+1)
+-- Dumped from database version 17.6 (Debian 17.6-1.pgdg13+1)
+-- Dumped by pg_dump version 17.6 (Debian 17.6-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -177,6 +177,43 @@ ALTER SEQUENCE public.genres_id_seq OWNED BY public.genres.id;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    email character varying NOT NULL,
+    password_hash character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    last_login timestamp without time zone
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
 -- Name: countries id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -198,11 +235,18 @@ ALTER TABLE ONLY public.genres ALTER COLUMN id SET DEFAULT nextval('public.genre
 
 
 --
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
 -- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-ae1073922c14
+b47c34e44e60
 \.
 
 
@@ -618,7 +662,10 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 244	7
 245	1
 245	6
-247	1
+251	1
+252	2
+252	14
+252	25
 \.
 
 
@@ -936,7 +983,8 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 244	2
 244	5
 245	4
-247	6
+251	6
+252	4
 \.
 
 
@@ -945,7 +993,8 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 --
 
 COPY public.films (id, title, year, description, rating, photo, type) FROM stdin;
-247	Элементарно	2023	В Элемент-Сити обитатели огня, воды, земли и воздуха живут вместе. У сильной и вспыльчивой Эмбер завязывается дружба с расслабленным, плывущим по течению Уэйдом — дружба, которая бросит вызов её представлениям о мире вокруг.	7.7	Elemental.webp	movie
+251	Элементарно	2023	В Элемент-Сити обитатели огня, воды, земли и воздуха живут вместе. У сильной и вспыльчивой Эмбер завязывается дружба с расслабленным, плывущим по течению Уэйдом — дружба, которая бросит вызов её представлениям о мире вокруг.	7.7	Elemental.webp	movie
+252	Священная дорога	2025	Элис, уехавшая с семейного ужина после ссоры, случайно сбивает девушку в лесу на Халлоу-Роуд и теперь не знает, что делать. Она звонит своим родителям, и те отправляются к месту аварии.	6.3	HallowRoad.webp	movie
 109	Ужасающий	2016	В ночь Хеллоуина клоун-маньяк терроризирует трёх девушек, а также всех, кто попадается ему на пути.	5.9	Terrifier.webp	movie
 123	В никуда	2023	Беременная женщина, бежавшая из тоталитарной страны, пытается выжить в дрейфующем в море контейнере грузового судна.	6.4	Nowhere.webp	movie
 210	Основатель	2016	История жизни Рэя Крока, человека создавшего самую известную в мире сеть ресторанов быстрого обслуживания — McDonald`s.	7.6	TheFounder.webp	movie
@@ -1200,6 +1249,18 @@ COPY public.genres (id, name) FROM stdin;
 
 
 --
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, email, password_hash, created_at, last_login) FROM stdin;
+1	ff@fiif.ru	$2b$12$B2/.mN.S3AcLBrUErPMeDOubQhcU49YFHi2xwta3wQpsNU2eIArCe	2025-09-03 05:56:55.045243	\N
+2	effnn@cc.com	$2b$12$vPiZQ./uu75jI75iemLpTe7Sf6w8e014GRfrBHOaHr.f4l9mweZuC	2025-09-03 06:01:48.587681	\N
+3	aa@aa.ru	$2b$12$gc8lq7kY9AhV8ToXHwVCkO47mosjzkyKc2Nj4EioJJSlG5VQzUqq.	2025-09-03 08:05:02.878378	\N
+4	bb@bb.ru	$5$rounds=535000$cidrldIjpw/K4S/P$TygxLU4.A210v5NRK4su7zGZ4Xx4yj/nJs73CEJ8VF9	2025-09-03 08:13:39.409537	2025-09-03 08:13:58.711171
+\.
+
+
+--
 -- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1210,7 +1271,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 247, true);
+SELECT pg_catalog.setval('public.films_id_seq', 252, true);
 
 
 --
@@ -1218,6 +1279,13 @@ SELECT pg_catalog.setval('public.films_id_seq', 247, true);
 --
 
 SELECT pg_catalog.setval('public.genres_id_seq', 1, false);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 4, true);
 
 
 --
@@ -1285,6 +1353,22 @@ ALTER TABLE ONLY public.genres
 
 
 --
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: film_country film_country_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1320,5 +1404,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Y3veoydBXTkNTWVcpkaPGwoTqT7GMjOaj54YF4rgVkWGeG9g3vQJg6p7lBoidVy
+\unrestrict Fcx8rWBTaka5EryrnwaxgwUwnfJi5aMBDQiJCHAZCkMdyLWsjadb9rjGlMrVKsP
 

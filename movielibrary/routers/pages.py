@@ -20,6 +20,7 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from movielibrary.sessions_utils import get_current_user_email
 from movielibrary.auth_utils import (
     get_password_hash,
     get_user_by_email,
@@ -64,8 +65,6 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
     page = 1
     total_pages = 1
 
-    user_email = request.session.get("user_email")
-
     return templates.TemplateResponse(
         "index.html",
         {
@@ -74,7 +73,7 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": user_email,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -101,6 +100,7 @@ async def register_form(request: Request, db: AsyncSession = Depends(get_db)):
     description="Обрабатывает отправку формы регистрации, сохраняет пользователя в базе и выполняет редирект на главную страницу",
 )
 async def register(
+    request: Request,
     email: str = Form(...),
     password: str = Form(..., min_length=6),
     confirm_password: str = Form(...),
@@ -129,6 +129,7 @@ async def register(
         raise HTTPException(
             status_code=500, detail="Ошибка при создании пользователя"
         ) from None
+    request.session["user_email"] = user.email
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
@@ -170,6 +171,12 @@ async def login(
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
+@router.get("/logout")
+async def logout(request: Request):
+    request.session.pop("user_email", None)
+    return RedirectResponse(url="/")
+
+
 @router.get(
     "/series/",
     summary="List Films with pagination",
@@ -209,6 +216,7 @@ async def list_series(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -261,6 +269,7 @@ async def search_films(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -314,6 +323,7 @@ async def read_films_by_genre(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -367,6 +377,7 @@ async def read_films_by_country(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -412,6 +423,7 @@ async def read_films_by_year(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
+            "user_email": get_current_user_email(request),
         },
     )
 
@@ -436,6 +448,7 @@ async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db
             "film": film,
             "genres": genres_for_template,
             "page_title": page_title,
+            "user_email": get_current_user_email(request),
         },
     )
 

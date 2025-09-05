@@ -1,6 +1,7 @@
+# movielibrary/pages.py
 import os
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 from fastapi import (
@@ -14,14 +15,17 @@ from fastapi import (
     status,
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from movielibrary.sessions_utils import get_current_user_email
 from movielibrary.auth_utils import (
+    create_access_token,
+    get_current_user_optional,
+    get_current_user_required,
     get_password_hash,
     get_user_by_email,
     verify_password,
@@ -49,13 +53,12 @@ async def get_all_genres(db: AsyncSession):
     return result.scalars().all()
 
 
-@router.get(
-    "/",
-    response_class=HTMLResponse,
-    summary="Read Films",
-    description="Главная страница с HTML-шаблоном. Показывает список жанров и пять последних фильмов",
-)
-async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
+@router.get("/", response_class=HTMLResponse, summary="Read Films")
+async def read_films(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional),
+):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id)).limit(5)
     result = await db.execute(stmt)
     films = result.scalars().all()
@@ -73,32 +76,17 @@ async def read_films(request: Request, db: AsyncSession = Depends(get_db)):
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,  # <— ВАЖНО
         },
     )
 
 
-@router.get(
-    "/register",
-    response_class=HTMLResponse,
-    summary="Register Form",
-    description="HTML-шаблон с формой для регистрации на сайте",
-)
-async def register_form(request: Request, db: AsyncSession = Depends(get_db)):
-    return templates.TemplateResponse(
-        "register.html",
-        {
-            "request": request,
-        },
-    )
+@router.get("/register", response_class=HTMLResponse, summary="Register Form")
+async def register_form(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
 
 
-@router.post(
-    "/register",
-    response_class=HTMLResponse,
-    summary="Register",
-    description="Обрабатывает отправку формы регистрации, сохраняет пользователя в базе и выполняет редирект на главную страницу",
-)
+@router.post("/register", response_class=HTMLResponse, summary="Register")
 async def register(
     request: Request,
     email: str = Form(...),
@@ -110,16 +98,16 @@ async def register(
         raise HTTPException(status_code=400, detail="Пароли не совпадают")
 
     try:
-        user = UserCreate(email=email, password=password)
+        user_schema = UserCreate(email=email, password=password)
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=e.errors()) from None
 
-    existing_user = await get_user_by_email(db, user.email)
+    existing_user = await get_user_by_email(db, user_schema.email)
     if existing_user:
         raise HTTPException(status_code=400, detail="Пользователь уже существует")
 
-    hashed_password = get_password_hash(user.password)
-    new_user = User(email=user.email, password_hash=hashed_password)
+    hashed_password = get_password_hash(user_schema.password)
+    new_user = User(email=user_schema.email, password_hash=hashed_password)
     try:
         db.add(new_user)
         await db.commit()
@@ -129,31 +117,27 @@ async def register(
         raise HTTPException(
             status_code=500, detail="Ошибка при создании пользователя"
         ) from None
-    request.session["user_email"] = user.email
-    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
-
-@router.get(
-    "/login",
-    response_class=HTMLResponse,
-    summary="Login Form",
-    description="HTML-шаблон с формой для входа на сайт",
-)
-async def login_form(request: Request, db: AsyncSession = Depends(get_db)):
-    return templates.TemplateResponse(
-        "login.html",
-        {
-            "request": request,
-        },
+    token = create_access_token(subject=new_user.email)
+    response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=60 * 60,
+        path="/",
     )
+    return response
 
 
-@router.post(
-    "/login",
-    response_class=HTMLResponse,
-    summary="Login",
-    description="Обрабатывает отправку формы входа, выполняет редирект на главную страницу",
-)
+@router.get("/login", response_class=HTMLResponse, summary="Login Form")
+async def login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@router.post("/login", response_class=HTMLResponse, summary="Login")
 async def login(
     request: Request,
     email: str = Form(...),
@@ -165,16 +149,29 @@ async def login(
         raise HTTPException(status_code=400, detail="Пользователя не существует")
     if not verify_password(password, user.password_hash):
         raise HTTPException(status_code=400, detail="Неправильный пароль")
+
     user.last_login = datetime.utcnow()
     await db.commit()
-    request.session["user_email"] = user.email
-    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
+    token = create_access_token(subject=user.email)
+    response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=60 * 60,
+        path="/",
+    )
+    return response
 
 
 @router.get("/logout")
-async def logout(request: Request):
-    request.session.pop("user_email", None)
-    return RedirectResponse(url="/")
+async def logout():
+    response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    response.delete_cookie("access_token", path="/")
+    return response
 
 
 @router.get(
@@ -187,6 +184,7 @@ async def list_series(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
     page_size: int = 5,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     total_stmt = select(func.count()).select_from(Film).filter(Film.type == "series")
     total_result = await db.execute(total_stmt)
@@ -216,25 +214,21 @@ async def list_series(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
 
-@router.get(
-    "/search",
-    response_class=HTMLResponse,
-    summary="Search Films by Title",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по названию (частичное совпадение)",
-)
+@router.get("/search", response_class=HTMLResponse, summary="Search Films by Title")
 async def search_films(
     request: Request,
     db: AsyncSession = Depends(get_db),
     q: str | None = Query(None, description="Название фильма"),
     page: int = Query(1, ge=1),
     page_size: int = 5,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
-    if len(q) < 3:
+    if not q or len(q) < 3:
         films_for_template = []
         total_pages = 0
     else:
@@ -260,6 +254,7 @@ async def search_films(
         films = result.scalars().all()
         films_for_template = [FilmRead.model_validate(film) for film in films]
         total_pages = (total_films + page_size - 1) // page_size
+
     genres_for_template = await get_all_genres(db)
     return templates.TemplateResponse(
         "index.html",
@@ -269,16 +264,13 @@ async def search_films(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
 
 @router.get(
-    "/genres/{genre_name}",
-    response_class=HTMLResponse,
-    summary="Read Films By Genre",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному жанру",
+    "/genres/{genre_name}", response_class=HTMLResponse, summary="Read Films By Genre"
 )
 async def read_films_by_genre(
     genre_name: str,
@@ -286,6 +278,7 @@ async def read_films_by_genre(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
     page_size: int = 5,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     total_stmt = (
         select(func.count(Film.id.distinct()))
@@ -323,7 +316,7 @@ async def read_films_by_genre(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
@@ -332,7 +325,6 @@ async def read_films_by_genre(
     "/countries/{country_name}",
     response_class=HTMLResponse,
     summary="Read Films By Country",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранной стране",
 )
 async def read_films_by_country(
     country_name: str,
@@ -340,6 +332,7 @@ async def read_films_by_country(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
     page_size: int = 5,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     total_stmt = (
         select(func.count(Film.id.distinct()))
@@ -377,23 +370,19 @@ async def read_films_by_country(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
 
-@router.get(
-    "/years/{year}",
-    response_class=HTMLResponse,
-    summary="Read Films By Year",
-    description="Возвращает HTML-страницу с фильмами, отфильтрованными по выбранному году выпуска",
-)
+@router.get("/years/{year}", response_class=HTMLResponse, summary="Read Films By Year")
 async def read_films_by_year(
     year: int,
     request: Request,
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
     page_size: int = 5,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     total_stmt = select(func.count()).select_from(Film).filter(Film.year == year)
     total_result = await db.execute(total_stmt)
@@ -423,18 +412,18 @@ async def read_films_by_year(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
 
-@router.get(
-    "/film/{id}",
-    response_class=HTMLResponse,
-    summary="Read Film By Id",
-    description="Возвращает HTML-страницу с выбранным фильмом",
-)
-async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db)):
+@router.get("/film/{id}", response_class=HTMLResponse, summary="Read Film By Id")
+async def read_film(
+    id: int,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional),
+):
     stmt = select(Film).options(*COMMON_FILM_OPTIONS).filter(Film.id == id)
     result = await db.execute(stmt)
     film = result.scalars().first()
@@ -448,18 +437,17 @@ async def read_film(id: int, request: Request, db: AsyncSession = Depends(get_db
             "film": film,
             "genres": genres_for_template,
             "page_title": page_title,
-            "user_email": get_current_user_email(request),
+            "user_email": current_user.email if current_user else None,
         },
     )
 
 
-@router.get(
-    "/create",
-    response_class=HTMLResponse,
-    summary="Show Create Film Form",
-    description="Показывает html-форму для создания нового фильма",
-)
-async def show_create_film_form(request: Request, db: AsyncSession = Depends(get_db)):
+@router.get("/create", response_class=HTMLResponse, summary="Show Create Film Form")
+async def show_create_film_form(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_required),
+):
     stmt_genre = select(Genre)
     result_genre = await db.execute(stmt_genre)
     genre_list = result_genre.scalars().all()
@@ -470,15 +458,16 @@ async def show_create_film_form(request: Request, db: AsyncSession = Depends(get
 
     return templates.TemplateResponse(
         "create.html",
-        {"request": request, "genre_list": genre_list, "country_list": country_list},
+        {
+            "request": request,
+            "genre_list": genre_list,
+            "country_list": country_list,
+            "user_email": current_user.email,
+        },
     )
 
 
-@router.post(
-    "/create",
-    summary="Create Film",
-    description="Обрабатывает отправку формы создания фильма, сохраняет фильм в базе и выполняет редирект на главную страницу",
-)
+@router.post("/create", summary="Create Film")
 async def create_film(
     background_tasks: BackgroundTasks,
     title: str = Form(..., min_length=1),
@@ -491,6 +480,7 @@ async def create_film(
     countries: List[int] = Form([]),
     type: str = Form(...),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_required),
 ):
     if code != os.getenv("VALID_CODE"):
         raise HTTPException(status_code=400, detail="Неверный код доступа")

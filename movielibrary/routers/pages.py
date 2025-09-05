@@ -15,7 +15,6 @@ from fastapi import (
     status,
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy import desc, func, select
@@ -233,7 +232,7 @@ async def search_films(
         total_pages = 0
     else:
         total_stmt = (
-            select(func.count(Film.id.distinct()))
+            select(func.count())
             .select_from(Film)
             .join(Film.genres)
             .join(FilmGenre.genre)

@@ -10,14 +10,12 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", 5))
 DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", 5))
 
-# Асинхронный движок
 async_engine = create_async_engine(
     DATABASE_URL,
     pool_size=DB_POOL_SIZE,
     max_overflow=DB_MAX_OVERFLOW,
 )
 
-# Асинхронная фабрика сессий
 AsyncSessionLocal = async_sessionmaker(
     bind=async_engine,
     class_=AsyncSession,
@@ -26,7 +24,6 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
-# Асинхронный зависимый генератор
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as db:
         try:

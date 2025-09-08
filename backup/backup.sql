@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Fcx8rWBTaka5EryrnwaxgwUwnfJi5aMBDQiJCHAZCkMdyLWsjadb9rjGlMrVKsP
+\restrict Pinie8sCi54X3xdKZhD18pCbaaNEf1LM86wnKyBdoGj7dKWrjpvtqJgcakKekGV
 
 -- Dumped from database version 17.6 (Debian 17.6-1.pgdg13+1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-1.pgdg13+1)
@@ -17,6 +17,20 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
 
 --
 -- Name: mediatype; Type: TYPE; Schema: public; Owner: postgres
@@ -246,7 +260,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-b47c34e44e60
+dbfd26b9c9d4
 \.
 
 
@@ -666,6 +680,8 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 252	2
 252	14
 252	25
+253	1
+254	1
 \.
 
 
@@ -985,6 +1001,9 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 245	4
 251	6
 252	4
+253	2
+253	5
+254	9
 \.
 
 
@@ -995,6 +1014,8 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 COPY public.films (id, title, year, description, rating, photo, type) FROM stdin;
 251	Элементарно	2023	В Элемент-Сити обитатели огня, воды, земли и воздуха живут вместе. У сильной и вспыльчивой Эмбер завязывается дружба с расслабленным, плывущим по течению Уэйдом — дружба, которая бросит вызов её представлениям о мире вокруг.	7.7	Elemental.webp	movie
 252	Священная дорога	2025	Элис, уехавшая с семейного ужина после ссоры, случайно сбивает девушку в лесу на Халлоу-Роуд и теперь не знает, что делать. Она звонит своим родителям, и те отправляются к месту аварии.	6.3	HallowRoad.webp	movie
+253	Тёрнер и Хуч	1989	Профессиональный сыщик Скотт Тернер ненавидит беспорядок. В его жизни все заранее спланировано и предсказуемо. Хуч - самый неспокойный, самый невоспитанный и абсолютно неподдающийся дрессировке пес. Не повезет тому несчастному хозяину, к которому он попадет. Тернер слишком поздно понял, кого впустил в свой дом. Но шумные ссоры ни к чему не привели. Возможно, лучший способ одолеть своего врага - подружиться с ним.	7.6	TurnerHooch.webp	movie
+254	Пеле: Рождение легенды	2015	История стремительного восхождения талантливого мальчика Пеле из трущоб Сан-Паулу - от дворовой босоногой команды до победы на Чемпионате мира.	8.5	Pele.webp	movie
 109	Ужасающий	2016	В ночь Хеллоуина клоун-маньяк терроризирует трёх девушек, а также всех, кто попадается ему на пути.	5.9	Terrifier.webp	movie
 123	В никуда	2023	Беременная женщина, бежавшая из тоталитарной страны, пытается выжить в дрейфующем в море контейнере грузового судна.	6.4	Nowhere.webp	movie
 210	Основатель	2016	История жизни Рэя Крока, человека создавшего самую известную в мире сеть ресторанов быстрого обслуживания — McDonald`s.	7.6	TheFounder.webp	movie
@@ -1253,10 +1274,7 @@ COPY public.genres (id, name) FROM stdin;
 --
 
 COPY public.users (id, email, password_hash, created_at, last_login) FROM stdin;
-1	ff@fiif.ru	$2b$12$B2/.mN.S3AcLBrUErPMeDOubQhcU49YFHi2xwta3wQpsNU2eIArCe	2025-09-03 05:56:55.045243	\N
-2	effnn@cc.com	$2b$12$vPiZQ./uu75jI75iemLpTe7Sf6w8e014GRfrBHOaHr.f4l9mweZuC	2025-09-03 06:01:48.587681	\N
-3	aa@aa.ru	$2b$12$gc8lq7kY9AhV8ToXHwVCkO47mosjzkyKc2Nj4EioJJSlG5VQzUqq.	2025-09-03 08:05:02.878378	\N
-4	bb@bb.ru	$5$rounds=535000$cidrldIjpw/K4S/P$TygxLU4.A210v5NRK4su7zGZ4Xx4yj/nJs73CEJ8VF9	2025-09-03 08:13:39.409537	2025-09-03 08:13:58.711171
+1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	\N
 \.
 
 
@@ -1271,7 +1289,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 252, true);
+SELECT pg_catalog.setval('public.films_id_seq', 254, true);
 
 
 --
@@ -1285,7 +1303,7 @@ SELECT pg_catalog.setval('public.genres_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 4, true);
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
@@ -1369,6 +1387,13 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: idx_films_title_trgm; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_films_title_trgm ON public.films USING gin (title public.gin_trgm_ops);
+
+
+--
 -- Name: film_country film_country_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1404,5 +1429,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-
+\unrestrict Pinie8sCi54X3xdKZhD18pCbaaNEf1LM86wnKyBdoGj7dKWrjpvtqJgcakKekGV
 

@@ -1,7 +1,7 @@
 from typing import List
 
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import Float, Integer, String
+from sqlalchemy import Float, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .associations import FilmCountry, FilmGenre
@@ -35,3 +35,12 @@ class Film(Base):
     @property
     def country_list(self):
         return [fc.country for fc in self.countries]
+
+    __table_args__ = (
+        Index(
+            "idx_films_title_trgm",
+            "title",
+            postgresql_using="gin",
+            postgresql_ops={"title": "gin_trgm_ops"},
+        ),
+    )

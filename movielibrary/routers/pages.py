@@ -117,7 +117,7 @@ async def register(
             status_code=500, detail="Ошибка при создании пользователя"
         ) from None
 
-    token = create_access_token(subject=new_user.email)
+    token = create_access_token(email=new_user.email)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     response.set_cookie(
         key="access_token",
@@ -152,7 +152,7 @@ async def login(
     user.last_login = datetime.utcnow()
     await db.commit()
 
-    token = create_access_token(subject=user.email)
+    token = create_access_token(email=user.email)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     response.set_cookie(
         key="access_token",

@@ -232,7 +232,7 @@ async def search_films(
         total_pages = 0
     else:
         total_stmt = (
-            select(func.count())
+            select(func.count(Film.id.distinct()))
             .select_from(Film)
             .join(Film.genres)
             .join(FilmGenre.genre)

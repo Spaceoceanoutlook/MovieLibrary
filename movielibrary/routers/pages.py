@@ -75,7 +75,7 @@ async def read_films(
             "genres": genres_for_template,
             "page": page,
             "total_pages": total_pages,
-            "user_email": current_user.email if current_user else None,  # <— ВАЖНО
+            "user_email": current_user.email if current_user else None,
         },
     )
 
@@ -164,6 +164,48 @@ async def login(
         path="/",
     )
     return response
+
+
+@router.get("/account", response_class=HTMLResponse, summary="Show Account")
+async def account(
+    request: Request,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+):
+    return templates.TemplateResponse(
+        "account.html",
+        {
+            "request": request,
+            "user_email": current_user.email if current_user else None,
+        },
+    )
+
+
+@router.post(
+    "/account/change_password", response_class=HTMLResponse, summary="Change Password"
+)
+async def change_password(
+    request: Request,
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    old_password: str = Form(...),
+    new_password: str = Form(..., min_length=6),
+    confirm_password: str = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    if new_password != confirm_password:
+        raise HTTPException(status_code=400, detail="Пароли не совпадают")
+    if not verify_password(old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Неверный старый пароль")
+    current_user.password_hash = get_password_hash(new_password)
+    db.add(current_user)
+    await db.commit()
+    return templates.TemplateResponse(
+        "account.html",
+        {
+            "request": request,
+            "user_email": current_user.email if current_user else None,
+            "message": "Пароль успешно изменён",
+        },
+    )
 
 
 @router.get("/logout")

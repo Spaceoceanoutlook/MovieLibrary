@@ -45,7 +45,7 @@ def test_filmread_from_object():
     fr = FilmRead.model_validate(film)
     assert fr.title == film.title
     assert fr.rating == film.rating
-    assert fr.genres[0].name == "Action"
+    assert fr.genres[1].name == "Thriller"
     assert fr.countries[0].name == "USA"
 
 

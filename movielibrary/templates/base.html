@@ -17,10 +17,8 @@
                     <button type="submit">Найти</button>
                 </form>
                 {% if user_email %}
-                <div>Привет, {{ user_email }}</div>
-                <a href="/logout" class="login">Выход</a>
+                <a href="/account" class="login">Личный кабинет</a>
                 {% else %}
-                <div>Привет, незнакомец</div>
                 <a href="/login" class="login">Вход</a>
                 {% endif %}
             </div>

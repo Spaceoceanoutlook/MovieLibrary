@@ -297,6 +297,109 @@ main {
     color: #fff;
 }
 
+.account-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.account-container h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.account-info {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.account-section {
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.account-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.account-form button {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #f90;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.account-form button:hover {
+    background: #ff6a00;
+}
+
+.logout-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #ff6a00, #ffb347);
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    width: fit-content;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.popup {
+    position: fixed;
+    top: 80px;
+    right: 50px;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 16px;
+    z-index: 10000;
+    display: none;
+    cursor: default;
+    user-select: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.popup button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: bold;
+    margin-left: 15px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.popup.alert-error {
+    background-color: #f44336;
+}
+
 @media (max-width: 700px) {
     .film-card {
         flex-direction: column;

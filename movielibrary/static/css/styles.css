@@ -139,10 +139,14 @@ main {
     font-size: 16px;
     min-height: 40px;
     line-height: 20px;
-    overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: box;
+    box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .movie-info p {
@@ -176,6 +180,7 @@ main {
 
 .pagination {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
     margin: 20px 0;

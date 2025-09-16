@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     password: str
 
     @field_validator("password")
+    @classmethod
     def validate_password(cls, v):
         if len(v) < 6:
             raise ValueError("Пароль должен содержать минимум 6 символов")

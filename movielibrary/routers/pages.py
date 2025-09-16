@@ -1,4 +1,3 @@
-# movielibrary/pages.py
 import os
 from datetime import datetime
 from typing import List, Optional
@@ -125,7 +124,7 @@ async def register(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=60 * 60,
+        max_age=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")) * 60,
         path="/",
     )
     return response
@@ -160,7 +159,7 @@ async def login(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=60 * 60,
+        max_age=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")) * 60,
         path="/",
     )
     return response

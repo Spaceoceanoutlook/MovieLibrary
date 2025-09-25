@@ -4,51 +4,71 @@ from pydantic import ValidationError
 from movielibrary.schemas.film import FilmRead
 
 
-class DummyGenre:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+def test_filmread_valid_data():
+    data = {
+        "id": 1,
+        "title": "Test Film",
+        "year": 2021,
+        "rating": 7.5,
+        "photo": "test.webp",
+        "description": "A test description",
+        "genre_list": [
+            {"id": 1, "name": "Драма"},
+            {"id": 2, "name": "Триллер"},
+        ],
+        "country_list": [
+            {"id": 1, "name": "США"},
+            {"id": 2, "name": "Россия"},
+        ],
+    }
+    film = FilmRead.model_validate(data)
+
+    assert film.id == 1
+    assert film.title == "Test Film"
+    assert film.rating == 7.5
+    assert film.genres[1].name == "Триллер"
+    assert film.countries[0].name == "США"
 
 
-class DummyCountry:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-
-class DummyFilm:
-    def __init__(self):
-        self.id = 1
-        self.title = "Test Film"
-        self.rating = 7.5
-        self.description = "A test description"
-        self.year = 2021
-        self.photo = "test.jpg"
-        self.genres = [DummyGenre(1, "Action"), DummyGenre(2, "Thriller")]
-        self.countries = [DummyCountry(1, "USA"), DummyCountry(2, "France")]
-
-
-class IncompleteFilm:
-    """Фильм без rating"""
-
-    def __init__(self):
-        self.id = 2
-        self.title = "Film 2"
-        self.description = "A test description"
-        self.year = 2022
-        self.genres = []
-        self.countries = []
-
-
-def test_filmread_from_object():
-    film = DummyFilm()
-    fr = FilmRead.model_validate(film)
-    assert fr.title == film.title
-    assert fr.rating == film.rating
-    assert fr.genres[1].name == "Thriller"
-    assert fr.countries[0].name == "USA"
-
-
-def test_filmread_missing_required_field_raises():
+def test_filmread_invalid_rating():
+    """Рейтинг вне диапазона"""
+    data = {
+        "id": 2,
+        "title": "Bad Rating Film",
+        "year": 2020,
+        "rating": 17.0,
+        "photo": "test.jpg",
+        "genre_list": [],
+        "country_list": [],
+    }
     with pytest.raises(ValidationError):
-        FilmRead.model_validate(IncompleteFilm())
+        FilmRead.model_validate(data)
+
+
+def test_filmread_invalid_year():
+    """Год больше текущего"""
+    data = {
+        "id": 3,
+        "title": "Future Film",
+        "year": 2028,
+        "rating": 5.0,
+        "photo": "test.jpg",
+        "genre_list": [],
+        "country_list": [],
+    }
+    with pytest.raises(ValidationError):
+        FilmRead.model_validate(data)
+
+
+def test_filmread_missing_required_field():
+    """Нет обязательного поля rating"""
+    data = {
+        "id": 4,
+        "title": "Film without rating",
+        "year": 2022,
+        "photo": "test.jpg",
+        "genre_list": [],
+        "country_list": [],
+    }
+    with pytest.raises(ValidationError):
+        FilmRead.model_validate(data)

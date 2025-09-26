@@ -25,10 +25,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 def get_password_hash(password: str) -> str:
     """Хэширует пароль с использованием sha256_crypt.
-
     Args:
         password: Пароль в открытом виде
-
     Returns:
         Хэшированный пароль
     """
@@ -37,11 +35,9 @@ def get_password_hash(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Проверяет соответствие пароля хэшу.
-
     Args:
         plain_password: Пароль в открытом виде
         hashed_password: Хэшированный пароль
-
     Returns:
         True если пароль верный, False если неверный
     """
@@ -51,14 +47,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
     """
     Получает пользователя из базы данных по email.
-
     Args:
         db: Асинхронная сессия базы данных
         email: Email пользователя для поиска
-
     Returns:
         User объект если пользователь найден, иначе None
-
     """
     result = await db.execute(select(User).filter(User.email == email))
     return result.scalar_one_or_none()
@@ -67,32 +60,25 @@ async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
 def create_access_token(email: str) -> str:
     """
     Создает JWT токен доступа для пользователя.
-
     Args:
         email: Email пользователя
-
     Returns:
         Закодированный JWT токен
-
     """
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"sub": email, "exp": expire, "type": "access"}
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    data = {"sub": email, "exp": expire, "type": "access"}
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_access_token(token: str) -> str:
     """
     Декодирует JWT токен доступа и возвращает email пользователя.
-
     Args:
         token: JWT токен для декодирования
-
     Returns:
         Email пользователя из токена
-
     Raises:
         HTTPException: Если токен недействителен, просрочен или имеет неверный тип
-
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -113,13 +99,10 @@ def decode_access_token(token: str) -> str:
 def get_token_from_request(request: Request) -> Optional[str]:
     """
     Извлекает токен доступа из cookies запроса.
-
     Args:
         request: HTTP запрос
-
     Returns:
         Токен доступа, если найден в cookies, иначе None
-
     """
     cookie = request.cookies.get("access_token")
     if cookie:
@@ -133,20 +116,15 @@ async def get_current_user_required(
 ) -> User:
     """
     Зависимость, внедряется в маршруты, где нужна обязательная авторизация.
-
     Проверяет токен авторизации и возвращает объект пользователя.
     Выбрасывает HTTP 401 ошибку если пользователь не авторизован.
-
     Args:
         request: HTTP запрос
         db: Асинхронная сессия базы данных
-
     Returns:
         Объект User если авторизация успешна
-
     Raises:
         HTTPException: 401 если токен отсутствует, недействителен или пользователь не найден
-
     """
     token = get_token_from_request(request)
     if not token:
@@ -164,17 +142,13 @@ async def get_current_user_optional(
 ) -> Optional[User]:
     """
     Зависимость, внедряется в маршруты, где не нужна обязательная авторизация.
-
     Проверяет токен авторизации и возвращает объект пользователя если авторизация успешна.
     Возвращает None если токен отсутствует, недействителен или пользователь не найден.
-
     Args:
         request: HTTP запрос
         db: Асинхронная сессия базы данных
-
     Returns:
         Объект User если авторизация успешна, иначе None
-
     """
     token = get_token_from_request(request)
     if not token:

@@ -31,7 +31,7 @@ async def cmd_search(message: types.Message):
 
 @dp.message(Command("genres"))
 async def cmd_genres(message: types.Message):
-    url = "https://spaceocean.ru/api/filters/genres/"
+    url = "https://filmlibrary.ru/api/filters/genres/"
     async with aiohttp.ClientSession() as session:
         try:
             genres_data: List[str] = await fetch_json(session, url)
@@ -67,7 +67,7 @@ async def handle_genre_callback(call: types.CallbackQuery):
         genre = data
         offset = 0
 
-    url = f"https://spaceocean.ru/api/filters/genres/{genre}"
+    url = f"https://filmlibrary.ru/api/filters/genres/{genre}"
     async with aiohttp.ClientSession() as session:
         try:
             films: List[Dict[str, Any]] = await fetch_json(session, url)
@@ -125,7 +125,7 @@ async def handle_text(message: types.Message):
     if not query:
         return
 
-    url = f"https://spaceocean.ru/api/films/search?q={query}"
+    url = f"https://filmlibrary.ru/api/films/search?q={query}"
     async with aiohttp.ClientSession() as session:
         try:
             films: List[Dict[str, Any]] = await fetch_json(session, url)
@@ -155,7 +155,7 @@ async def handle_text(message: types.Message):
 @dp.callback_query(F.data.startswith("film_"))
 async def handle_film_details(call: types.CallbackQuery):
     film_id = call.data.split("_", 1)[1]
-    url = f"https://spaceocean.ru/api/films/{film_id}"
+    url = f"https://filmlibrary.ru/api/films/{film_id}"
 
     async with aiohttp.ClientSession() as session:
         try:

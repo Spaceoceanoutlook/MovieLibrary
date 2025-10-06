@@ -17,11 +17,11 @@ receiver_emails = [
 
 async def send_email_async(title: str) -> None:
     for receiver_email in receiver_emails:
-        text = f"На https://spaceocean.ru добавлен новый фильм: {title}"
+        text = f"На https://filmlibrary.ru добавлен новый фильм: {title}"
         msg = MIMEText(text, "plain")
-        msg["From"] = f'"Spaceocean" <{sender_email}>'
+        msg["From"] = f'"FilmLibrary" <{sender_email}>'
         msg["To"] = receiver_email
-        msg["Subject"] = "Привет от Spaceocean!"
+        msg["Subject"] = "Привет от FilmLibrary!"
 
         await aiosmtplib.send(
             msg,

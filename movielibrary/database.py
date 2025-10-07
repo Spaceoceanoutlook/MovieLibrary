@@ -1,14 +1,12 @@
-import os
 from typing import AsyncGenerator
 
-from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-load_dotenv()
+from settings import settings
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
-DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", 5))
-DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", 5))
+DATABASE_URL = settings.database_url
+DB_POOL_SIZE = int(settings.db_pool_size)
+DB_MAX_OVERFLOW = int(settings.db_max_overflow)
 
 async_engine = create_async_engine(
     DATABASE_URL,

@@ -1,8 +1,6 @@
-import os
 from datetime import datetime
 from typing import List, Optional
 
-from dotenv import load_dotenv
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -34,8 +32,7 @@ from movielibrary.models.enums import MediaType
 from movielibrary.schemas.film import FilmRead
 from movielibrary.schemas.user import UserCreate
 from movielibrary.send_email import send_email_async
-
-load_dotenv()
+from settings import settings
 
 router = APIRouter()
 templates = Jinja2Templates(directory="movielibrary/templates")
@@ -124,7 +121,7 @@ async def register(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")) * 60,
+        max_age=int(settings.access_token_expire_minutes) * 60,
         path="/",
     )
     return response
@@ -159,7 +156,7 @@ async def login(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")) * 60,
+        max_age=int(settings.access_token_expire_minutes) * 60,
         path="/",
     )
     return response
@@ -522,7 +519,7 @@ async def create_film(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user_required),
 ):
-    if code != os.getenv("VALID_CODE"):
+    if code != settings.valid_code:
         raise HTTPException(status_code=400, detail="Неверный код доступа")
 
     try:

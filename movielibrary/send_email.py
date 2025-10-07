@@ -1,17 +1,13 @@
-import os
 from email.mime.text import MIMEText
 
 import aiosmtplib
-from dotenv import load_dotenv
 
-load_dotenv()
+from settings import settings
 
-sender_email = os.getenv("EMAIL", "")
-password = os.getenv("EMAIL_APP_PASSWORD", "")
+sender_email = settings.email
+password = settings.email_app_password
 receiver_emails = [
-    email.strip()
-    for email in os.getenv("RECEIVER_EMAILS", "").split(",")
-    if email.strip()
+    email.strip() for email in settings.receiver_emails.split(",") if email.strip()
 ]
 
 

@@ -42,6 +42,8 @@ COMMON_FILM_OPTIONS = [
     selectinload(Film.countries).selectinload(FilmCountry.country),
 ]
 
+MINUTE_IN_SECONDS = 60
+
 
 async def get_all_genres(db: AsyncSession):
     result = await db.execute(select(Genre))
@@ -121,7 +123,7 @@ async def register(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=int(settings.access_token_expire_minutes) * 60,
+        max_age=int(settings.access_token_expire_minutes) * MINUTE_IN_SECONDS,
         path="/",
     )
     return response
@@ -156,7 +158,7 @@ async def login(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=int(settings.access_token_expire_minutes) * 60,
+        max_age=int(settings.access_token_expire_minutes) * MINUTE_IN_SECONDS,
         path="/",
     )
     return response

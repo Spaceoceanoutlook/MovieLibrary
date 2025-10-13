@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16
+    container_name: films_db
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backup:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

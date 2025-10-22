@@ -29,7 +29,7 @@ from movielibrary.auth_utils import (
 from movielibrary.database import get_db
 from movielibrary.models import Country, Film, FilmCountry, FilmGenre, Genre, User
 from movielibrary.models.enums import MediaType
-from movielibrary.schemas.film import FilmRead
+from movielibrary.schemas.film import FilmCreate, FilmRead
 from movielibrary.schemas.user import UserCreate
 from movielibrary.send_email import send_email_async
 from settings import settings
@@ -534,12 +534,24 @@ async def create_film(
     if media_type != MediaType.movie:
         title += " (Сериал)"
 
+    try:
+        film_schemas = FilmCreate(
+            title=title,
+            year=year,
+            description=description,
+            rating=rating,
+            photo=photo,
+            type=media_type,
+        )
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors()) from None
+
     new_film = Film(
-        title=title,
-        year=year,
-        description=description,
-        rating=rating,
-        photo=photo,
+        title=film_schemas.title,
+        year=film_schemas.year,
+        description=film_schemas.description,
+        rating=film_schemas.rating,
+        photo=film_schemas.photo,
         type=media_type,
     )
 

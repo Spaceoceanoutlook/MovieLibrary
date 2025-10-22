@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -24,7 +24,7 @@ COMMON_FILM_OPTIONS = [
     description="Возвращает список всех фильмов с жанрами и странами",
 )
 async def list_films(db: AsyncSession = Depends(get_db)):
-    stmt = select(Film).options(*COMMON_FILM_OPTIONS)
+    stmt = select(Film).options(*COMMON_FILM_OPTIONS).order_by(desc(Film.id))
     result = await db.execute(stmt)
     films = result.unique().scalars().all()
     return films

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict UGSrjKucxeM2gyC1ASw0Cjd1cX0M9RWRF2YEgjHrnmT00kOYZt3TWSqg79rYK4a
+\restrict NILUQcx9fWKVhwHNqJ9K8vp3sotn6frLNo4Tp1MRcnfpqFyiKNZlnkC0gEncqAV
 
 -- Dumped from database version 16.10 (Debian 16.10-1.pgdg13+1)
 -- Dumped by pg_dump version 16.10 (Debian 16.10-1.pgdg13+1)
@@ -695,6 +695,7 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 261	1
 262	2
 263	3
+264	21
 \.
 
 
@@ -1028,6 +1029,8 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 262	1
 263	1
 263	9
+264	9
+264	10
 \.
 
 
@@ -1281,6 +1284,7 @@ COPY public.films (id, title, year, description, rating, photo, type) FROM stdin
 262	Не вешайте трубку	2016	Два приятеля-подростка развлеклись - позвонили незнакомке среди ночи, представились полицией, напугали её, говоря при этом не вешать трубку, потом выложили запись в интернет. Периодически они так подшучивали и над соседями, и над знакомыми. Но вскоре им звонит неизвестный и повторяет их же шалость. Только теперь это не шутка - и трубку вешать нельзя, иначе пострадают их родные и близкие.	5.3	DontHangUp.webp	movie
 263	Дыши (Сериал)	2024	Лера — звездный московский акушер, сторонница идеи естественных родов. Одной из ее клиенток становится Маша, юная любовница влиятельного бизнесмена Шахова. Девушка должна родить ему долгожданного наследника, однако из-за осложнений, возникших во время родов, ребенок появляется на свет в крайне тяжелом состоянии. Шахов инициирует расследование, от результатов которого будет зависеть судьба не только клиники, но и самой Леры ― главной обвиняемой в случившейся трагедии.	7.3	dishi.webp	series
 261	Авария	1997	Во время автопутешествия у супружеской пары Джеффа и Эми посреди пустынной трассы внезапно ломается их новый джип. Проезжавший мимо дальнобойщик согласился подбросить Эми до ближайшего придорожного кафе, где есть телефон, чтобы вызвать эвакуатор, пока Джефф сторожит машину. Спустя некоторое время Джефф случайно обнаруживает причину поломки и устраняет её. Доехав до условленного места, мужчина не находит жену, а владелец кафе и посетители не уверены, что она вообще была здесь.	7.3	Breakdown.webp	movie
+264	Зыбучие пески (Сериал)	2019	Массовая стрельба произошла в одной из элитных шведских школ. В этом преступлении обвиняют Майю. На суде все пытаются понять её мотивы и разобраться, кто же она - убийца или жертва?	7	Quicksand.webp	series
 \.
 
 
@@ -1308,7 +1312,7 @@ COPY public.genres (id, name) FROM stdin;
 
 COPY public.users (id, email, password_hash, created_at, last_login) FROM stdin;
 2	zainka1808@mail.ru	$2b$12$54fEKvnDRAiydXkKDBuLTuZ1gxTAwSFXKy6Vm2IRebYHyKAgk0m0G	2025-09-08 14:28:49.220732	2025-09-11 12:21:42.146827
-1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2025-10-22 07:39:53.509212
+1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2025-10-29 11:53:45.158256
 \.
 
 
@@ -1323,7 +1327,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 263, true);
+SELECT pg_catalog.setval('public.films_id_seq', 264, true);
 
 
 --
@@ -1463,5 +1467,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UGSrjKucxeM2gyC1ASw0Cjd1cX0M9RWRF2YEgjHrnmT00kOYZt3TWSqg79rYK4a
+\unrestrict NILUQcx9fWKVhwHNqJ9K8vp3sotn6frLNo4Tp1MRcnfpqFyiKNZlnkC0gEncqAV
 

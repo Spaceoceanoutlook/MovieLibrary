@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     algorithm: str
 
     database_url: str
+    sqlalchemy_url: str
     db_pool_size: int
     db_max_overflow: int
 

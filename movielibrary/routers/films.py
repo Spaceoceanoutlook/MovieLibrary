@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +17,7 @@ COMMON_FILM_OPTIONS = [
 
 @router.get(
     "",
-    response_model=List[FilmRead],
+    response_model=list[FilmRead],
     summary="List Films",
     description="Возвращает список всех фильмов с жанрами и странами",
 )
@@ -32,7 +30,7 @@ async def list_films(db: AsyncSession = Depends(get_db)):
 
 @router.get(
     "/search",
-    response_model=List[FilmBase],
+    response_model=list[FilmBase],
     summary="Search Films by Title",
     description="Позволяет искать фильмы по названию (частичное совпадение)",
 )

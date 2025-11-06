@@ -214,7 +214,7 @@ async def logout():
 
 
 @router.get(
-    "/series/",
+    "/series",
     summary="List Films with pagination",
     description="Возвращает список всех сериалов с жанрами и странами",
 )

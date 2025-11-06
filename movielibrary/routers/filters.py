@@ -20,7 +20,7 @@ COMMON_FILM_OPTIONS = [
 
 
 @router.get(
-    "/genres/", summary="List Genres", description="Возвращает список всех жанров"
+    "/genres", summary="List Genres", description="Возвращает список всех жанров"
 )
 async def list_genres(db: AsyncSession = Depends(get_db)):
     stmt = select(Genre)
@@ -30,7 +30,7 @@ async def list_genres(db: AsyncSession = Depends(get_db)):
 
 
 @router.get(
-    "/countries/", summary="List Countries", description="Возвращает список всех стран"
+    "/countries", summary="List Countries", description="Возвращает список всех стран"
 )
 async def list_countries(db: AsyncSession = Depends(get_db)):
     stmt = select(Country)
@@ -103,7 +103,7 @@ async def read_films_by_year(year: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.get(
-    "/series/",
+    "/series",
     response_model=List[FilmRead],
     summary="List Films",
     description="Возвращает список всех сериалов с жанрами и странами",

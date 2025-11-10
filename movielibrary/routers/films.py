@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from movielibrary.database import get_db
 from movielibrary.models import Film, FilmCountry, FilmGenre
-from movielibrary.schemas.film import FilmBase, FilmRead
+from movielibrary.schemas.film import FilmRead, FilmSearchResult
 
 router = APIRouter()
 
@@ -30,7 +30,7 @@ async def list_films(db: AsyncSession = Depends(get_db)):
 
 @router.get(
     "/search",
-    response_model=list[FilmBase],
+    response_model=list[FilmSearchResult],
     summary="Search Films by Title",
     description="Позволяет искать фильмы по названию (частичное совпадение)",
 )

@@ -5,7 +5,7 @@ services:
     env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backup:/docker-entrypoint-initdb.d
+      - ./backup_movie:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
 

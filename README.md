@@ -15,11 +15,11 @@ git clone https://github.com/Spaceoceanoutlook/MovieLibrary.git
 ```bash 
 poetry env use ~/.pyenv/versions/3.13.0/bin/python
 ```
-Активируем и добавляем полученный путь в Select Interpreter
+Добавляем полученный путь в Select Interpreter и активируем:
 ```bash
 poetry env activate
 ```
-Установка библиотек:
+Перезапускаем терминал и устанавливаем библиотеки:
 ```bash 
 poetry install
 ```

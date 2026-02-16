@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 3teZPWPjkJRffVbEUZlwlUY7X5OomZL9OVHYfYMNcIw4ZcjbNT6ovyIS0yNNqaQ
+\restrict SYRlJofo7rDANODgxaVN8rlCXnxVVrk60XtJADkDeaTUqcMQErzg8mVzYauqTmd
 
 -- Dumped from database version 16.10 (Debian 16.10-1.pgdg13+1)
 -- Dumped by pg_dump version 16.10 (Debian 16.10-1.pgdg13+1)
@@ -712,6 +712,7 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 276	2
 277	3
 278	4
+279	1
 \.
 
 
@@ -1069,6 +1070,7 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 276	1
 277	1
 278	1
+279	6
 \.
 
 
@@ -1337,6 +1339,7 @@ COPY public.films (id, title, year, description, rating, photo, type) FROM stdin
 274	Хэллоуин. Ночной кошмар	2025	Студентка Дина возвращается в родной городок и отправляется вместо приболевшей подруги посидеть с маленьким сыном шерифа. Год назад здесь произошло жуткое убийство няни, которое так и не было раскрыто, и в то время как шериф возобновляет расследование из-за внезапно появляющихся новых улик, тот самый маньяк уже выбрал Дину своей следующей жертвой.	6.1	NightoftheReaper.webp	movie
 276	Калибр	2017	Два старых закадычных друга отправляются на выходные в шотландскую сельскую местность. У одного из них ожидается пополнение в семействе, и парни решают напоследок хорошенько повеселиться. Изрядно заложив за воротник в первый вечер, на следующий день друзья отправляются на охоту в местные леса, где сталкиваются с непредвиденными обстоятельствами.	6.6	Calibre.webp	movie
 278	Цепь	2000	Иногда материнская любовь не знает границ. Молодая семейная пара, Энн и Джек, несколько лет безуспешно пытаются стать родителями. У Хелен и Фрэнка та же проблема, но они выбирают другой путь ее решения.\r\n\r\nПохитив Энн и инсценировав ее смерть, они надеются, что она выносит их ребенка, а затем от нее можно будет избавиться. Но когда из трех родителей двое стоят на грани безумия, материнство оборачивается не рождением, а смертью...	6.7	Cord.webp	movie
+279	Рататуй	2007	Крыс Реми обладает уникальным вкусом. Он готов рисковать собственной жизнью, чтобы посмотреть любимое кулинарное шоу и раздобыть какую-нибудь приправку или просто свежий продукт. Реми живет со своими сородичами, которые его не понимают и не принимают его увлечения кулинарией. Когда Реми случайно попадает на кухню шикарного ресторана, он решает воспользоваться выпавшим ему шансом и проверить свои навыки.\r\n\r\nНа эту же кухню попадает и юный Лингвини. Всё, на что он может рассчитывать — это должность уборщика. Но он тоже получает свой шанс.	8.1	Ratatouille.webp	movie
 \.
 
 
@@ -1364,7 +1367,7 @@ COPY public.genres (id, name) FROM stdin;
 
 COPY public.users (id, email, password_hash, created_at, last_login) FROM stdin;
 2	zainka1808@mail.ru	$2b$12$54fEKvnDRAiydXkKDBuLTuZ1gxTAwSFXKy6Vm2IRebYHyKAgk0m0G	2025-09-08 14:28:49.220732	2025-09-11 12:21:42.146827
-1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2026-01-27 04:33:09.692664
+1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2026-02-16 05:16:00.505793
 \.
 
 
@@ -1379,7 +1382,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 278, true);
+SELECT pg_catalog.setval('public.films_id_seq', 279, true);
 
 
 --
@@ -1519,5 +1522,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 3teZPWPjkJRffVbEUZlwlUY7X5OomZL9OVHYfYMNcIw4ZcjbNT6ovyIS0yNNqaQ
+\unrestrict SYRlJofo7rDANODgxaVN8rlCXnxVVrk60XtJADkDeaTUqcMQErzg8mVzYauqTmd
 

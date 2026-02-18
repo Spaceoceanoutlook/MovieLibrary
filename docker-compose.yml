@@ -1,30 +1,28 @@
 services:
   web:
     build: .
-    container_name: movielibrary_web
-    env_file: .env
+    container_name: movielibrary_app
     command: uvicorn movielibrary.main:app --host 0.0.0.0 --port 8000
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8002:8000"
     depends_on:
       - db
-    restart: always
+    env_file: .env
 
   db:
     image: postgres:18
-    container_name: films_db
+    container_name: filmsdb
     env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./backup:/docker-entrypoint-initdb.d
-    restart: always
 
-  bot:
-    build:
-      context: ./telegrambot
-    container_name: movielibrary_bot
-    env_file: .env
-    restart: always
+  # bot:
+  #   build:
+  #     context: ./telegrambot
+  #   container_name: movielibrary_bot
+  #   env_file: .env
+  #   restart: always
 
 volumes:
   postgres_data:

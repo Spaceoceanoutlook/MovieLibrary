@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict nFu1dbrPdiC144oBS3VbrD1g0eNq6DYa7BpqPqQFt99z4KunKaTtOnSrdnQlKss
+\restrict t0PtXpI9pwK2BoairZD3qCqEDQaV6Ls3PbehaEsc8N8PBQF5xULdOJQEgdjROo4
 
 -- Dumped from database version 16.10 (Debian 16.10-1.pgdg13+1)
 -- Dumped by pg_dump version 16.10 (Debian 16.10-1.pgdg13+1)
@@ -730,6 +730,7 @@ COPY public.film_country (film_id, country_id) FROM stdin;
 284	18
 285	3
 286	3
+287	1
 \.
 
 
@@ -1098,6 +1099,7 @@ COPY public.film_genre (film_id, genre_id) FROM stdin;
 285	9
 285	10
 286	2
+287	1
 \.
 
 
@@ -1367,6 +1369,7 @@ COPY public.films (id, title, year, description, rating, photo, type) FROM stdin
 277	Жить	2010	Дикие места. Трое преследуют пожилого охотника и молодого парня. Один – проводник, второй – боец. Незнакомые, чуждые друг другу люди должны вместе выжить и добраться до города. Какова цена жизни? На этот вопрос каждый ответит по-своему.	7.3	zhit.webp	movie
 283	На помощь!	2025	Линда Лиддл, сотрудница отдела стратегического развития, справедливо считает себя очень полезной сотрудницей и рассчитывает на повышение. Вот только в офисе она всех раздражает, и когда после смерти пожилого президента компании это место занимает его сын Брэдли, обещанная Линде должность уходит другому. Вскоре делегация фирмы отправляется в командировку в Бангкок, самолёт терпит крушение, и единственными выжившими на небольшом тайском острове оказываются Линда и Брэдли. Будучи фанаткой шоу о выживании, женщина сразу берёт ситуацию в свои руки.	6.4	SendHelp.webp	movie
 284	В клетке	2010	Кэрол - участница гуманитарной экспедиции, они пересекают Восточную Европу на автомобиле. И в тот момент, когда казалось бы они почти прибыли на место, героев похищают неизвестные по непонятным причинам. Вскоре пленники понимают что за ужас им уготовлено пережить…	5.8	Captifs.webp	movie
+287	Шаттл	2008	Мэл и Джулз возвращаются из Мексики, проведя там отличный отдых. Уже далеко за полночь, и они решают поймать маршрутку, чтобы доехать домой. Их попутчиками оказываются нервный бухгалтер и два парня, один из которых пристает к Джулз. Внезапно они оказываются на незнакомых, пустынных улицах - как говорит водитель, чтобы избежать пробок...Но что на самом деле происходит и куда они направляются?...	5.7	Shuttle.webp	movie
 270	Основной инстинкт	1992	Детектив Ник Каррен ведет расследование по делу об убийстве на сексуальной почве. Подозрение падает на подругу убитого Кэтрин — писательницу, автора шокирующих романов, которая в своей последней книге подробно описала абсолютно аналогичное преступление. Но обворожительная, неимоверно сексуальная писательница обладает удивительной способностью манипулировать мужчинами, пробуждая в них один из самых основных инстинктов.	7.8	BasicInstinct.webp	movie
 271	Не грози Южному Централу, попивая сок у себя в квартале	1995	Молодой афроамериканец по прозвищу Пепельница переезжает в Южный Централ к своему отцу, где редкий молодой человек доживает до 18. Парень гордится, что они с отцом почти ровесники — он старше папы всего на два года. Гордится он и бабулей, которая в свои-то преклонные годы покуривает и не стесняется крепких словечек. Вскоре Пепельница встречается со своим кузеном по прозвищу Лок Дог. Этот парень — гангстер, в его личном арсенале не только пистолеты и автомат, но и ядерная боеголовка советского производства — для самозащиты, разумеется. Пепельница должен выбрать дальнейший путь в жизни: он может стать «просто хорошим чернокожим» или «опасным чернокожим», примкнув к банде своего кузена.	7.2	DontBeaMenacetoSouthCentral.webp	movie
 274	Хэллоуин. Ночной кошмар	2025	Студентка Дина возвращается в родной городок и отправляется вместо приболевшей подруги посидеть с маленьким сыном шерифа. Год назад здесь произошло жуткое убийство няни, которое так и не было раскрыто, и в то время как шериф возобновляет расследование из-за внезапно появляющихся новых улик, тот самый маньяк уже выбрал Дину своей следующей жертвой.	6.1	NightoftheReaper.webp	movie
@@ -1404,7 +1407,9 @@ COPY public.users (id, email, password_hash, created_at, last_login) FROM stdin;
 3	vsyizhhh@checkyourform.xyz	$2b$12$O0qb/VxoGVFcvQ4Yg87lYefmb0oVMmkAgtr/MFaSJKrOFIUWJd7KK	2026-03-16 18:02:07.225555	\N
 4	emegfeix@immenseignite.info	$2b$12$Zh.9dSsBmroo08K8aFGrpOZ7u7MycCRS5DZ46puImnjij4GYTkdpW	2026-04-05 10:09:28.601016	\N
 5	vuqjhnqh@immenseignite.info	$2b$12$T3BSRuhs7lOGEMczvUwpmO9x3DDkEHVjFPB6YBbwRfkO8M6uLV8eG	2026-04-07 07:34:03.166818	\N
-1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2026-04-21 05:26:30.413298
+6	wpsgdhsy@immenseignite.info	$2b$12$RJoWcCa9oIwrSdjh89tck.4SPoL98q9uVq7UhEteGo1b8b1xmUlSa	2026-04-30 03:35:36.845994	\N
+7	ryancloud@mail.ru	$2b$12$URJ.KUrXnZwjMgrYcrjL4ucXugi8ZQJXXCFQL6LVLzdMIOww9Aqbu	2026-04-30 06:50:12.088851	\N
+1	spaceocean@outlook.com	$2b$12$KHf9cKrMtNXHCrQxNY2V6.4ryUVFgHiWOc.jG1J61Ckqduoy2lE9q	2025-09-08 12:14:40.453483	2026-05-06 05:20:55.602264
 \.
 
 
@@ -1419,7 +1424,7 @@ SELECT pg_catalog.setval('public.countries_id_seq', 1, false);
 -- Name: films_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.films_id_seq', 286, true);
+SELECT pg_catalog.setval('public.films_id_seq', 287, true);
 
 
 --
@@ -1433,7 +1438,7 @@ SELECT pg_catalog.setval('public.genres_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 5, true);
+SELECT pg_catalog.setval('public.users_id_seq', 7, true);
 
 
 --
@@ -1559,5 +1564,5 @@ ALTER TABLE ONLY public.film_genre
 -- PostgreSQL database dump complete
 --
 
-\unrestrict nFu1dbrPdiC144oBS3VbrD1g0eNq6DYa7BpqPqQFt99z4KunKaTtOnSrdnQlKss
+\unrestrict t0PtXpI9pwK2BoairZD3qCqEDQaV6Ls3PbehaEsc8N8PBQF5xULdOJQEgdjROo4
 

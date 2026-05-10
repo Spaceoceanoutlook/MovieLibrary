@@ -4,8 +4,8 @@ up:
 down:
     docker compose down
 
-db:
-    docker exec -it films_db psql -U postgres -d films_db
+shell:
+    docker exec -it filmsdb psql -U postgres -d films_db
 
 app:
-    docker exec -it movielibrary_web /bin/bash
+    docker exec -it movielibrary_app /bin/bash
